@@ -136,6 +136,14 @@ export function Sidebar({
       const newNote = await createNoteAsync(newNoteData);
       onSelectNote(newNote);
       onSelectNotebook(notebookId);
+
+      // Focus the editor after note creation
+      setTimeout(() => {
+        const firstBlock = document.querySelector('[data-block-id] [contenteditable]') as HTMLElement;
+        if (firstBlock) {
+          firstBlock.focus();
+        }
+      }, 100);
     } catch (error) {
       console.error('Failed to create note:', error);
     } finally {
@@ -171,12 +179,20 @@ export function Sidebar({
       };
 
       const newNote = await createNoteAsync(newNoteData);
-      
+
       // Clear input and navigate to new note
       setNewNoteInputs(prev => ({ ...prev, [notebookId]: '' }));
       setFocusedInput(null);
       onSelectNote(newNote);
       onSelectNotebook(notebookId);
+
+      // Focus the editor after note creation
+      setTimeout(() => {
+        const firstBlock = document.querySelector('[data-block-id] [contenteditable]') as HTMLElement;
+        if (firstBlock) {
+          firstBlock.focus();
+        }
+      }, 100);
     } catch (error) {
       console.error('Failed to create note:', error);
     } finally {

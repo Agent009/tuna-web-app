@@ -4,8 +4,34 @@ import { useState, useCallback, useEffect } from 'react';
 import { Block, BlockType } from '@/lib/types';
 
 export function useEditor(initialBlocks: Block[] = []) {
-  const [blocks, setBlocks] = useState<Block[]>(initialBlocks);
+  // Ensure there's always at least one block
+  const ensureMinimumBlocks = (blocks: Block[]): Block[] => {
+    if (blocks.length === 0) {
+      return [{
+        id: crypto.randomUUID(),
+        type: 'paragraph',
+        content: '',
+        properties: {},
+        children: []
+      }];
+    }
+    return blocks;
+  };
+
+  const [blocks, setBlocks] = useState<Block[]>(() => ensureMinimumBlocks(initialBlocks));
   const [focusedBlockId, setFocusedBlockId] = useState<string | null>(null);
+
+  // Update blocks when initialBlocks change, ensuring minimum blocks
+  useEffect(() => {
+    const newBlocks = ensureMinimumBlocks(initialBlocks);
+    if (JSON.stringify(newBlocks) !== JSON.stringify(blocks)) {
+      setBlocks(newBlocks);
+      // Auto-focus the first block if it's empty
+      if (newBlocks.length === 1 && !newBlocks[0].content.trim()) {
+        setFocusedBlockId(newBlocks[0].id);
+      }
+    }
+  }, [initialBlocks]);
 
   const createBlock = useCallback((type: BlockType = 'paragraph', content: string = ''): Block => {
     return {
@@ -19,18 +45,18 @@ export function useEditor(initialBlocks: Block[] = []) {
 
   const addBlock = useCallback((afterBlockId?: string, type: BlockType = 'paragraph') => {
     const newBlock = createBlock(type);
-    
+
     setBlocks(currentBlocks => {
       if (!afterBlockId) {
         return [...currentBlocks, newBlock];
       }
-      
+
       const index = currentBlocks.findIndex(block => block.id === afterBlockId);
       const newBlocks = [...currentBlocks];
       newBlocks.splice(index + 1, 0, newBlock);
       return newBlocks;
     });
-    
+
     setFocusedBlockId(newBlock.id);
     return newBlock.id;
   }, [createBlock]);
@@ -46,28 +72,33 @@ export function useEditor(initialBlocks: Block[] = []) {
   const deleteBlock = useCallback((blockId: string) => {
     setBlocks(currentBlocks => {
       const filteredBlocks = currentBlocks.filter(block => block.id !== blockId);
-      if (filteredBlocks.length === 0) {
-        const newBlock = createBlock();
-        setFocusedBlockId(newBlock.id);
-        return [newBlock];
-      }
-      return filteredBlocks;
+      // Always ensure at least one block exists
+      return ensureMinimumBlocks(filteredBlocks);
     });
   }, [createBlock]);
+
+  // Custom setBlocks that ensures minimum blocks
+  const setBlocksWithMinimum = useCallback((newBlocks: Block[] | ((prev: Block[]) => Block[])) => {
+    if (typeof newBlocks === 'function') {
+      setBlocks(prev => ensureMinimumBlocks(newBlocks(prev)));
+    } else {
+      setBlocks(ensureMinimumBlocks(newBlocks));
+    }
+  }, []);
 
   const moveBlock = useCallback((draggedId: string, targetId: string, position: 'before' | 'after') => {
     setBlocks(currentBlocks => {
       const draggedIndex = currentBlocks.findIndex(block => block.id === draggedId);
       const targetIndex = currentBlocks.findIndex(block => block.id === targetId);
-      
+
       if (draggedIndex === -1 || targetIndex === -1) return currentBlocks;
-      
+
       const newBlocks = [...currentBlocks];
       const [draggedBlock] = newBlocks.splice(draggedIndex, 1);
-      
+
       const insertIndex = position === 'before' ? targetIndex : targetIndex + 1;
       newBlocks.splice(insertIndex, 0, draggedBlock);
-      
+
       return newBlocks;
     });
   }, []);
@@ -105,6 +136,6 @@ export function useEditor(initialBlocks: Block[] = []) {
     deleteBlock,
     moveBlock,
     handleSlashCommand,
-    setBlocks
+    setBlocks: setBlocksWithMinimum
   };
 }

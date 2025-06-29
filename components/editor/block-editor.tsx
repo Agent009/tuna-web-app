@@ -41,10 +41,24 @@ export function BlockEditor({ blocks, onChange, textDirection = 'ltr', className
 
   // Update internal blocks when props change
   useEffect(() => {
-    if (JSON.stringify(blocks) !== JSON.stringify(editorBlocks)) {
-      setBlocks(blocks);
+    // Ensure blocks are never empty
+    const blocksToSet = blocks.length === 0 ? [{
+      id: crypto.randomUUID(),
+      type: 'paragraph' as const,
+      content: '',
+      properties: {},
+      children: []
+    }] : blocks;
+
+    if (JSON.stringify(blocksToSet) !== JSON.stringify(editorBlocks)) {
+      setBlocks(blocksToSet);
+
+      // Auto-focus first block if it's the only one and empty
+      if (blocksToSet.length === 1 && !blocksToSet[0].content.trim() && !focusedBlockId) {
+        setFocusedBlockId(blocksToSet[0].id);
+      }
     }
-  }, [blocks]);
+  }, [blocks, editorBlocks, setBlocks, focusedBlockId, setFocusedBlockId]);
 
   const handleDragEnd = (event: any) => {
     const { active, over } = event;

@@ -63,6 +63,14 @@ export default function Home() {
     createNoteAsync(newNoteData)
       .then((newNote) => {
         setSelectedNote(newNote);
+        // Small delay to ensure the editor is ready
+        setTimeout(() => {
+          // Focus the first block in the editor
+          const firstBlock = document.querySelector('[data-block-id] [contenteditable]') as HTMLElement;
+          if (firstBlock) {
+            firstBlock.focus();
+          }
+        }, 100);
       })
       .catch((error) => {
         console.error('Failed to create note:', error);

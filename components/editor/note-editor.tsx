@@ -36,14 +36,30 @@ export function NoteEditor({ note, onClose }: NoteEditorProps) {
   useEffect(() => {
     if (note) {
       setTitle(note.title);
-      setBlocks(note.content);
+      // Ensure there's always at least one block for editing
+      const noteBlocks = note.content && note.content.length > 0
+        ? note.content
+        : [{
+            id: crypto.randomUUID(),
+            type: 'paragraph' as const,
+            content: '',
+            properties: {},
+            children: []
+          }];
+      setBlocks(noteBlocks);
       setTags(note.tags);
       // Reset text direction for each note
       setTextDirection('ltr');
     } else {
       // New note
       setTitle('');
-      setBlocks([]);
+      setBlocks([{
+        id: crypto.randomUUID(),
+        type: 'paragraph' as const,
+        content: '',
+        properties: {},
+        children: []
+      }]);
       setTags([]);
       setTextDirection('ltr');
     }
