@@ -1,15 +1,15 @@
 "use client";
 
-import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Search, Filter } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useNotes } from '@/hooks/use-notes';
 import { Note } from '@/lib/types';
 import { NoteCard } from './note-card';
-import { SearchEngine } from '@/lib/search';
+import { NoteFilterBar } from './note-filter-bar';
+import { useNoteFilters } from '@/hooks/use-note-filters';
 
 interface NoteListProps {
   selectedNotebook: string | null;
@@ -19,17 +19,18 @@ interface NoteListProps {
   selectedNoteId: string | null;
 }
 
-export function NoteList({ 
-  selectedNotebook, 
-  selectedFilter, 
-  onSelectNote, 
+export function NoteList({
+  selectedNotebook,
+  selectedFilter,
+  onSelectNote,
   onCreateNote,
-  selectedNoteId 
+  selectedNoteId
 }: NoteListProps) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const { notes, notebooks } = useNotes();
+  const { notebooks } = useNotes();
+  const { filteredNotes, totalFilteredCount } = useNoteFilters();
 
-  const filteredNotes = notes.filter(note => {
+  // Apply additional filters based on sidebar selection
+  const displayNotes = filteredNotes.filter(note => {
     // Filter by notebook only if a specific notebook is selected AND we're viewing 'all' notes for that notebook
     if (selectedNotebook && selectedFilter !== 'archived' && note.notebookId !== selectedNotebook) {
       return false;
@@ -48,13 +49,6 @@ export function NoteList({
       return false;
     }
 
-    // Search filter
-    if (searchQuery.trim()) {
-      const searchEngine = new SearchEngine([note]);
-      const results = searchEngine.search(searchQuery);
-      return results.length > 0;
-    }
-
     return true;
   });
 
@@ -67,34 +61,32 @@ export function NoteList({
       <div className="p-4 border-b tuna-header bg-card">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-semibold text-lg text-foreground">
-            {selectedNotebook 
-              ? getNotebookName(selectedNotebook)
-              : selectedFilter === 'favorites' 
-                ? 'Favorites' 
-                : selectedFilter === 'archived'
-                  ? 'Archived'
-                  : 'All Notes'
-            }
+            <div className="flex items-center gap-2">
+              {selectedNotebook
+                ? getNotebookName(selectedNotebook)
+                : selectedFilter === 'favorites'
+                  ? 'Favorites'
+                  : selectedFilter === 'archived'
+                    ? 'Archived'
+                    : 'All Notes'
+              }
+              <Badge variant="secondary" className="bg-secondary/10 text-secondary border-secondary/20">
+                {displayNotes.length}
+              </Badge>
+            </div>
           </h2>
           <Button size="sm" onClick={onCreateNote} className="bg-primary text-primary-foreground hover:bg-secondary">
             <Plus className="h-4 w-4" />
           </Button>
         </div>
-
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search notes..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 bg-input text-foreground border-border"
-          />
-        </div>
       </div>
+
+      {/* Filter Bar */}
+      <NoteFilterBar />
 
       <ScrollArea className="flex-1 tuna-scrollbar">
         <AnimatePresence>
-          {filteredNotes.length === 0 ? (
+          {displayNotes.length === 0 ? (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -106,13 +98,13 @@ export function NoteList({
                 </div>
                 <p className="font-medium">No notes found</p>
                 <p className="text-sm mt-1">
-                  {searchQuery 
-                    ? 'Try adjusting your search terms'
+                  {totalFilteredCount === 0
+                    ? 'Try adjusting your filters'
                     : 'Create your first note to get started'
                   }
                 </p>
               </div>
-              {!searchQuery && (
+              {totalFilteredCount === 0 && (
                 <Button onClick={onCreateNote} variant="outline" className="border-border text-foreground hover:bg-accent hover:text-accent-foreground">
                   <Plus className="h-4 w-4 mr-2" />
                   Create Note
@@ -121,7 +113,7 @@ export function NoteList({
             </motion.div>
           ) : (
             <div className="p-2 space-y-2">
-              {filteredNotes.map((note, index) => (
+              {displayNotes.map((note, index) => (
                 <motion.div
                   key={note.id}
                   initial={{ opacity: 0, y: 20 }}

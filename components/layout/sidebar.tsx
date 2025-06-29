@@ -108,6 +108,11 @@ export function Sidebar({
       }, 100);
     }
     setExpandedNotebooks(newExpanded);
+
+    // Select the notebook when expanding to update the note list
+    if (newExpanded.has(notebookId)) {
+      onSelectNotebook(notebookId);
+    }
   };
 
   const handleCreateNoteInNotebook = async (notebookId: string) => {
@@ -115,7 +120,7 @@ export function Sidebar({
       // Handle case where notebook object is passed instead of ID
       notebookId = notebookId.id;
     }
-    
+
     setCreatingNote(notebookId);
     try {
       const newNoteData = {

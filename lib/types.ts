@@ -89,3 +89,28 @@ export interface TaskFilters {
 }
 
 export type TaskSortBy = 'dueDate' | 'priority' | 'created' | 'updated' | 'title';
+export interface NoteFilters {
+  search: string;
+  tags: string[];
+  dateRange: {
+    start: Date | null;
+    end: Date | null;
+  };
+  createdDateRange: {
+    start: Date | null;
+    end: Date | null;
+  };
+  favorites: boolean | null;
+  notebooks: string[];
+}
+
+export type NoteSortBy = 'updated' | 'created' | 'title' | 'alphabetical';
+
+export interface SavedFilter {
+  id: string;
+  name: string;
+  filters: NoteFilters;
+  sortBy: NoteSortBy;
+  sortAscending: boolean;
+  createdAt: Date;
+}
