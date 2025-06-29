@@ -217,6 +217,8 @@ export function useNotes() {
     // Computed counts for sidebar
     totalNotesCount: notesQuery.data?.filter(note => !note.isArchived).length || 0,
     favoritesCount: notesQuery.data?.filter(note => note.isFavorite && !note.isArchived).length || 0,
-    archivedCount: notesQuery.data?.filter(note => note.isArchived).length || 0
+    archivedCount: notesQuery.data?.filter(note => note.isArchived).length || 0,
+    // Debug info
+    allNotes: notesQuery.data || []
   };
 }

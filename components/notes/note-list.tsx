@@ -31,7 +31,7 @@ export function NoteList({
 
   const filteredNotes = notes.filter(note => {
     // Filter by notebook only if a specific notebook is selected AND we're viewing 'all' notes for that notebook
-    if (selectedNotebook && note.notebookId !== selectedNotebook) {
+    if (selectedNotebook && selectedFilter !== 'archived' && note.notebookId !== selectedNotebook) {
       return false;
     }
 
@@ -39,11 +39,12 @@ export function NoteList({
     if (selectedFilter === 'favorites' && !note.isFavorite) {
       return false;
     }
-    if (selectedFilter === 'archived' && !note.isArchived) {
-      return false;
+    if (selectedFilter === 'archived') {
+      // For archived filter, only show archived notes
+      return note.isArchived;
     }
-    // For 'all' filter and when viewing specific notebooks, exclude archived notes
-    if ((selectedFilter === 'all' || selectedNotebook) && note.isArchived) {
+    // For all other filters, exclude archived notes
+    if (note.isArchived) {
       return false;
     }
 
