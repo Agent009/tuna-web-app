@@ -230,7 +230,7 @@ export function Sidebar({
   const formatDate = (date: Date) => {
     const now = new Date();
     const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
-    
+
     if (diffInHours < 24) {
       return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     } else if (diffInHours < 24 * 7) {
@@ -298,7 +298,11 @@ export function Sidebar({
                   <item.icon className="h-4 w-4" />
                   {!isCollapsed && <span className="ml-2">{item.label}</span>}
                 </div>
-                {!isCollapsed && (item.count > 0 || item.id === 'tasks') && (
+                {!isCollapsed && (
+                  (item.id === 'archived' && item.count > 0) ||
+                  (item.id === 'tasks' && 'totalCount' in item && item.totalCount > 0) ||
+                  (item.id !== 'archived' && item.id !== 'tasks' && item.count > 0)
+                ) && (
                   <span className={`text-xs px-2 py-0.5 rounded-full ${
                     selectedFilter === item.filter
                       ? 'bg-accent/70 text-foreground'

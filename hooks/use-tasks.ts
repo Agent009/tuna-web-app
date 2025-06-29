@@ -50,7 +50,6 @@ export function useTasks() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      queryClient.invalidateQueries({ queryKey: ['notes'] });
       // Don't show toast for task creation to avoid noise
     },
     onError: (error) => {
@@ -84,10 +83,49 @@ export function useTasks() {
       const db = await getDb();
       if (!db) throw new Error('Database not available');
       
+      // Get the task before deleting to find associated note blocks
+      const taskToDelete = await db.tasks.get(taskId);
+      if (!taskToDelete) throw new Error('Task not found');
+
       await db.tasks.delete(taskId);
+      return { taskId, noteId: taskToDelete.noteId };
     },
-    onSuccess: () => {
+    onSuccess: ({ taskId, noteId }) => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
+
+      // Find and update the note to remove the task block
+      const notes = queryClient.getQueryData(['notes']) as any[];
+      if (notes) {
+        const noteToUpdate = notes.find(note => note.id === noteId);
+        if (noteToUpdate) {
+          const updatedContent = noteToUpdate.content.filter((block: any) =>
+            !(block.type === 'task' && block.properties?.taskId === taskId)
+          );
+
+          // Only update if content actually changed
+          if (updatedContent.length !== noteToUpdate.content.length) {
+            // Update the note in the database
+            getDb().then(db => {
+              if (db) {
+                db.notes.update(noteId, {
+                  content: updatedContent,
+                  updatedAt: new Date()
+                });
+              }
+            });
+
+            // Update the query cache
+            queryClient.setQueryData(['notes'], (oldNotes: any[]) =>
+              oldNotes.map(note =>
+                note.id === noteId
+                  ? { ...note, content: updatedContent, updatedAt: new Date() }
+                  : note
+              )
+            );
+          }
+        }
+      }
+
       toast.success('Task deleted successfully');
     },
     onError: () => {

@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Calendar, Flag, AlertTriangle } from 'lucide-react';
 import { format } from 'date-fns';
 import { useTasks } from '@/hooks/use-tasks';
+import { useNotes } from '@/hooks/use-notes';
 
 interface EditableBlockProps {
   block: Block;
@@ -37,7 +38,17 @@ export function EditableBlock({
   const [slashPosition, setSlashPosition] = useState({ x: 0, y: 0 });
   const contentRef = useRef<HTMLDivElement>(null);
   const lastCursorPositionRef = useRef<number | null>(null);
-  const { tasks, updateTask } = useTasks();
+  const { tasks, updateTask, createTaskAsync } = useTasks();
+  const { notes, updateNote } = useNotes();
+
+  // Extract task properties at component level to avoid conditional hook calls
+  const taskProps = block.properties || {};
+  const isCompleted = taskProps.completed || false;
+  const priority = taskProps.priority || 'medium';
+  const dueDate = taskProps.dueDate ? new Date(taskProps.dueDate) : null;
+  const flagged = taskProps.flagged || false;
+  const description = taskProps.description || '';
+  const taskId = taskProps.taskId;
 
   const {
     attributes,
@@ -69,16 +80,49 @@ export function EditableBlock({
     }
   }, [textDirection]);
 
+  // Handle task creation at component level to avoid conditional hook calls
+  useEffect(() => {
+    if (block.type === 'task' && !taskId && block.content.trim()) {
+      // Find the note this block belongs to
+      const currentNote = notes.find(note =>
+        note.content.some(b => b.id === block.id)
+      );
+
+      if (currentNote) {
+        // Create a task in the task system
+        createTaskAsync({
+          title: block.content,
+          description: description,
+          completed: isCompleted,
+          dueDate: dueDate,
+          priority: priority,
+          flagged: flagged,
+          noteId: currentNote.id
+        }).then((createdTask) => {
+          // Update the block to include the taskId
+          onChange({
+            properties: {
+              ...taskProps,
+              taskId: createdTask.id
+            }
+          });
+        }).catch((error) => {
+          console.error('Failed to create task:', error);
+        });
+      }
+    }
+  }, [block.type, taskId, block.content, block.id, notes, createTaskAsync, onChange, taskProps, description, isCompleted, dueDate, priority, flagged]);
+
   const handleInput = (e: React.FormEvent<HTMLDivElement>) => {
     // Get the current content
     const content = e.currentTarget.textContent || '';
-    
+
     // Check for slash command
     if (content.endsWith('/')) {
       const rect = e.currentTarget.getBoundingClientRect();
       const selection = window.getSelection();
       const range = selection?.getRangeAt(0);
-      
+
       if (range) {
         const rects = range.getClientRects();
         if (rects.length > 0) {
@@ -110,29 +154,29 @@ export function EditableBlock({
 
   const handleSlashSelect = (command: string) => {
     setShowSlashMenu(false);
-    
+
     // Store current cursor position
     const selection = window.getSelection();
     const range = selection?.getRangeAt(0);
     const cursorPosition = range?.startOffset || 0;
-    
+
     // Remove the slash from content
     const currentContent = contentRef.current?.textContent || '';
     const contentWithoutSlash = currentContent.slice(0, -1); // Remove last character (slash)
-    
+
     // Update content without slash
     onChange({ content: contentWithoutSlash });
     onSlashCommand(command);
-    
+
     // Restore focus and cursor position after command selection
     setTimeout(() => {
       if (contentRef.current) {
         contentRef.current.focus();
-        
+
         // Set cursor position at the end of content (where slash was)
         const range = document.createRange();
         const selection = window.getSelection();
-        
+
         if (contentRef.current.firstChild) {
           const textNode = contentRef.current.firstChild;
           const newPosition = Math.min(cursorPosition - 1, textNode.textContent?.length || 0);
@@ -142,7 +186,7 @@ export function EditableBlock({
           range.selectNodeContents(contentRef.current);
           range.collapse(false);
         }
-        
+
         selection?.removeAllRanges();
         selection?.addRange(range);
       }
@@ -210,8 +254,8 @@ export function EditableBlock({
               onKeyDown(e);
             }}
             data-placeholder={getPlaceholder()}
-            style={{ 
-              direction: textDirection, 
+            style={{
+              direction: textDirection,
               textAlign: textDirection === 'ltr' ? 'left' : 'right',
             }}
           >
@@ -222,17 +266,9 @@ export function EditableBlock({
     }
 
     if (block.type === 'task') {
-      const taskProps = block.properties || {};
-      const isCompleted = taskProps.completed || false;
-      const priority = taskProps.priority || 'medium';
-      const dueDate = taskProps.dueDate ? new Date(taskProps.dueDate) : null;
-      const flagged = taskProps.flagged || false;
-      const description = taskProps.description || '';
-      const taskId = taskProps.taskId;
-
       // Find the actual task from the database
       const actualTask = taskId ? tasks.find(t => t.id === taskId) : null;
-      
+
       // Use actual task data if available, otherwise fall back to block properties
       const displayCompleted = actualTask ? actualTask.completed : isCompleted;
       const displayPriority = actualTask ? actualTask.priority : priority;
@@ -252,9 +288,10 @@ export function EditableBlock({
                   updates: { completed: checked }
                 });
               }
-              // Also update the block properties for immediate UI feedback
+              // Update block properties for immediate UI feedback
+              const updatedProperties = { ...taskProps, completed: checked };
               onChange({
-                properties: { ...taskProps, completed: checked }
+                properties: updatedProperties
               });
             }}
           />

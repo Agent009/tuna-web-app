@@ -42,8 +42,8 @@ export function NoteList({
     if (selectedFilter === 'archived' && !note.isArchived) {
       return false;
     }
-    // For 'all' filter, always exclude archived notes
-    if (selectedFilter === 'all' && note.isArchived) {
+    // For 'all' filter and when viewing specific notebooks, exclude archived notes
+    if ((selectedFilter === 'all' || selectedNotebook) && note.isArchived) {
       return false;
     }
 
