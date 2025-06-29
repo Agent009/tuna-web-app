@@ -47,19 +47,16 @@ import { NoteFilters, NoteSortBy } from '@/lib/types';
 interface UnifiedFilterDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  selectedFilter?: string;
 }
 
-export function UnifiedFilterDialog({ open, onOpenChange }: UnifiedFilterDialogProps) {
+export function UnifiedFilterDialog({ open, onOpenChange, selectedFilter }: UnifiedFilterDialogProps) {
   const {
     filters,
-    sortBy,
-    sortAscending,
     savedFilters,
     availableTags,
     updateFilter,
     clearFilters,
-    changeSortBy,
-    toggleSortDirection,
     saveCurrentFilter,
     applySavedFilter,
     deleteSavedFilter,
@@ -170,18 +167,18 @@ export function UnifiedFilterDialog({ open, onOpenChange }: UnifiedFilterDialogP
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl max-h-[80vh] flex flex-col">
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Filter className="h-5 w-5" />
-            Filter & Sort Notes
+            Filter Notes
           </DialogTitle>
           <DialogDescription>
-            Customize how your notes are filtered and sorted. Changes are applied immediately.
+            Customize how your notes are filtered. Changes are applied immediately.
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="flex-1 pr-4">
+        <ScrollArea className="flex-1 pr-4 max-h-[60vh]">
           <div className="space-y-6">
             {/* Search Section */}
             <div className="space-y-3">
@@ -249,40 +246,43 @@ export function UnifiedFilterDialog({ open, onOpenChange }: UnifiedFilterDialogP
             <Separator />
 
             {/* Notebooks Section */}
-            <div className="space-y-3">
-              <Label className="text-sm font-medium flex items-center gap-2">
-                <BookOpen className="h-4 w-4" />
-                Notebooks
-                {filters.notebooks.length > 0 && (
-                  <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20">
-                    {filters.notebooks.length} selected
-                  </Badge>
-                )}
-              </Label>
-              <div className="flex flex-wrap gap-2">
-                {notebooks.map((notebook) => (
-                  <Button
-                    key={notebook.id}
-                    variant={filters.notebooks.includes(notebook.id) ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handleNotebookToggle(notebook.id)}
-                    className={filters.notebooks.includes(notebook.id)
-                      ? "bg-accent text-accent-foreground"
-                      : "border-border text-foreground hover:bg-accent hover:text-accent-foreground"
-                    }
-                  >
-                    <div className="flex items-center gap-2">
-                      {filters.notebooks.includes(notebook.id) && <Check className="h-3 w-3" />}
-                      <div
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: notebook.color }}
-                      />
-                      {notebook.name}
-                    </div>
-                  </Button>
-                ))}
+            {/* Only show Notebooks filter when viewing "All Notes" */}
+            {(!selectedFilter || selectedFilter === 'all') && (
+              <div className="space-y-3">
+                <Label className="text-sm font-medium flex items-center gap-2">
+                  <BookOpen className="h-4 w-4" />
+                  Notebooks
+                  {filters.notebooks.length > 0 && (
+                    <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20">
+                      {filters.notebooks.length} selected
+                    </Badge>
+                  )}
+                </Label>
+                <div className="flex flex-wrap gap-2">
+                  {notebooks.map((notebook) => (
+                    <Button
+                      key={notebook.id}
+                      variant={filters.notebooks.includes(notebook.id) ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handleNotebookToggle(notebook.id)}
+                      className={filters.notebooks.includes(notebook.id)
+                        ? "bg-accent text-accent-foreground"
+                        : "border-border text-foreground hover:bg-accent hover:text-accent-foreground"
+                      }
+                    >
+                      <div className="flex items-center gap-2">
+                        {filters.notebooks.includes(notebook.id) && <Check className="h-3 w-3" />}
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: notebook.color }}
+                        />
+                        {notebook.name}
+                      </div>
+                    </Button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             <Separator />
 
@@ -411,65 +411,6 @@ export function UnifiedFilterDialog({ open, onOpenChange }: UnifiedFilterDialogP
                     </Button>
                   </div>
                 )}
-              </div>
-            </div>
-
-            <Separator />
-
-            {/* Sort Section */}
-            <div className="space-y-3">
-              <Label className="text-sm font-medium flex items-center gap-2">
-                {sortAscending ? <SortAsc className="h-4 w-4" /> : <SortDesc className="h-4 w-4" />}
-                Sort Options
-              </Label>
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <Button
-                    variant={sortBy === 'updated' ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => changeSortBy('updated')}
-                    className={sortBy === 'updated'
-                      ? "bg-accent text-accent-foreground"
-                      : "border-border text-foreground hover:bg-accent hover:text-accent-foreground"
-                    }
-                  >
-                    <Clock className="h-3 w-3 mr-1" />
-                    Last Modified
-                  </Button>
-                  <Button
-                    variant={sortBy === 'created' ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => changeSortBy('created')}
-                    className={sortBy === 'created'
-                      ? "bg-accent text-accent-foreground"
-                      : "border-border text-foreground hover:bg-accent hover:text-accent-foreground"
-                    }
-                  >
-                    <Calendar className="h-3 w-3 mr-1" />
-                    Created Date
-                  </Button>
-                  <Button
-                    variant={sortBy === 'title' ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => changeSortBy('title')}
-                    className={sortBy === 'title'
-                      ? "bg-accent text-accent-foreground"
-                      : "border-border text-foreground hover:bg-accent hover:text-accent-foreground"
-                    }
-                  >
-                    Title
-                  </Button>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="sort-direction"
-                    checked={sortAscending}
-                    onCheckedChange={toggleSortDirection}
-                  />
-                  <Label htmlFor="sort-direction" className="text-sm">
-                    {sortAscending ? 'Ascending' : 'Descending'} order
-                  </Label>
-                </div>
               </div>
             </div>
 

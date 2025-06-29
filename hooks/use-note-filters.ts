@@ -254,6 +254,11 @@ export function useNoteFilters() {
     return count;
   }, [filters]);
 
+  // Check if any filters are active
+  const hasActiveFilters = useMemo(() => {
+    return activeFiltersCount > 0;
+  }, [activeFiltersCount]);
+
   return {
     // Data
     filteredNotes: sortedNotes,
@@ -275,6 +280,6 @@ export function useNoteFilters() {
 
     // Computed
     totalFilteredCount: sortedNotes.length,
-    hasActiveFilters: activeFiltersCount > 0
+    hasActiveFilters
   };
 }

@@ -76,7 +76,7 @@ export function NoteList({
             </div>
           </h2>
           <div className="flex items-center gap-2">
-            <UnifiedFilterButton />
+            <UnifiedFilterButton selectedFilter={selectedFilter} />
             <Button size="sm" onClick={onCreateNote} className="bg-primary text-primary-foreground hover:bg-secondary">
               <Plus className="h-4 w-4" />
             </Button>
