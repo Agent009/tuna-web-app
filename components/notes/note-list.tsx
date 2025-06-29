@@ -8,7 +8,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useNotes } from '@/hooks/use-notes';
 import { Note } from '@/lib/types';
 import { NoteCard } from './note-card';
-import { NoteFilterBar } from './note-filter-bar';
+import { UnifiedFilterButton } from './unified-filter-button';
 import { useNoteFilters } from '@/hooks/use-note-filters';
 
 interface NoteListProps {
@@ -75,14 +75,14 @@ export function NoteList({
               </Badge>
             </div>
           </h2>
-          <Button size="sm" onClick={onCreateNote} className="bg-primary text-primary-foreground hover:bg-secondary">
-            <Plus className="h-4 w-4" />
-          </Button>
+          <div className="flex items-center gap-2">
+            <UnifiedFilterButton />
+            <Button size="sm" onClick={onCreateNote} className="bg-primary text-primary-foreground hover:bg-secondary">
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
-
-      {/* Filter Bar */}
-      <NoteFilterBar />
 
       <ScrollArea className="flex-1 tuna-scrollbar">
         <AnimatePresence>

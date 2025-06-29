@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useState, useMemo, useCallback } from 'react';
 import { Note, NoteFilters, NoteSortBy, SavedFilter } from '@/lib/types';
 import { useNotes } from './use-notes';
@@ -17,6 +18,73 @@ export function useNoteFilters() {
   const [sortBy, setSortBy] = useState<NoteSortBy>('updated');
   const [sortAscending, setSortAscending] = useState(false);
   const [savedFilters, setSavedFilters] = useState<SavedFilter[]>([]);
+
+  // Load saved filters from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('noteflow-saved-filters');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        setSavedFilters(parsed.map((filter: any) => ({
+          ...filter,
+          createdAt: new Date(filter.createdAt),
+          filters: {
+            ...filter.filters,
+            dateRange: {
+              start: filter.filters.dateRange.start ? new Date(filter.filters.dateRange.start) : null,
+              end: filter.filters.dateRange.end ? new Date(filter.filters.dateRange.end) : null
+            },
+            createdDateRange: {
+              start: filter.filters.createdDateRange.start ? new Date(filter.filters.createdDateRange.start) : null,
+              end: filter.filters.createdDateRange.end ? new Date(filter.filters.createdDateRange.end) : null
+            }
+          }
+        })));
+      } catch (error) {
+        console.error('Failed to load saved filters:', error);
+      }
+    }
+  }, []);
+
+  // Save filters to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('noteflow-saved-filters', JSON.stringify(savedFilters));
+  }, [savedFilters]);
+
+  // Load filter state from localStorage on mount
+  useEffect(() => {
+    const savedState = localStorage.getItem('noteflow-filter-state');
+    if (savedState) {
+      try {
+        const parsed = JSON.parse(savedState);
+        setFilters({
+          ...parsed.filters,
+          dateRange: {
+            start: parsed.filters.dateRange.start ? new Date(parsed.filters.dateRange.start) : null,
+            end: parsed.filters.dateRange.end ? new Date(parsed.filters.dateRange.end) : null
+          },
+          createdDateRange: {
+            start: parsed.filters.createdDateRange.start ? new Date(parsed.filters.createdDateRange.start) : null,
+            end: parsed.filters.createdDateRange.end ? new Date(parsed.filters.createdDateRange.end) : null
+          }
+        });
+        setSortBy(parsed.sortBy || 'updated');
+        setSortAscending(parsed.sortAscending !== undefined ? parsed.sortAscending : false);
+      } catch (error) {
+        console.error('Failed to load filter state:', error);
+      }
+    }
+  }, []);
+
+  // Save filter state to localStorage whenever it changes
+  useEffect(() => {
+    const state = {
+      filters,
+      sortBy,
+      sortAscending
+    };
+    localStorage.setItem('noteflow-filter-state', JSON.stringify(state));
+  }, [filters, sortBy, sortAscending]);
 
   // Filter notes based on current filters
   const filteredNotes = useMemo(() => {
