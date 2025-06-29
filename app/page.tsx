@@ -24,8 +24,11 @@ export default function Home() {
     const handleOpenNote = (event: CustomEvent) => {
       const { note } = event.detail;
       setSelectedNote(note);
-      setSelectedFilter('all'); // Switch back to notes view
-      setSelectedNotebook(note.notebookId); // Select the correct notebook
+      // Don't change the filter if we're in tasks view - keep tasks visible
+      if (selectedFilter !== 'tasks') {
+        setSelectedFilter('all'); // Switch back to notes view
+        setSelectedNotebook(note.notebookId); // Select the correct notebook
+      }
     };
 
     window.addEventListener('openNote', handleOpenNote as EventListener);

@@ -65,10 +65,14 @@ export function useTasks() {
       if (!db) throw new Error('Database not available');
       
       await db.tasks.update(id, { ...updates, updatedAt: new Date() });
+      return { id, updates };
     },
-    onSuccess: () => {
+    onSuccess: ({ id, updates }) => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      queryClient.invalidateQueries({ queryKey: ['notes'] });
+      // Only invalidate notes if necessary to prevent circular updates
+      if (updates.title || updates.description) {
+        queryClient.invalidateQueries({ queryKey: ['notes'] });
+      }
     },
     onError: () => {
       toast.error('Failed to update task');

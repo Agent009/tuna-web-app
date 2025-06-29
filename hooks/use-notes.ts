@@ -71,10 +71,15 @@ export function useNotes() {
       if (!db) throw new Error('Database not available');
       
       await db.notes.update(id, { ...updates, updatedAt: new Date() });
+      return { id, updates };
     },
-    onSuccess: () => {
+    onSuccess: ({ id, updates }) => {
       queryClient.invalidateQueries({ queryKey: ['notes'] });
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      
+      // Only invalidate tasks if content was actually updated
+      if (updates.content) {
+        queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      }
     },
     onError: () => {
       toast.error('Failed to update note');

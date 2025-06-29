@@ -41,24 +41,29 @@ export function BlockEditor({ blocks, onChange, textDirection = 'ltr', className
 
   // Update internal blocks when props change
   useEffect(() => {
-    // Ensure blocks are never empty
-    const blocksToSet = blocks.length === 0 ? [{
-      id: crypto.randomUUID(),
-      type: 'paragraph' as const,
-      content: '',
-      properties: {},
-      children: []
-    }] : blocks;
+    // Only update if blocks actually changed (deep comparison)
+    const blocksChanged = JSON.stringify(blocks) !== JSON.stringify(editorBlocks);
 
-    if (JSON.stringify(blocksToSet) !== JSON.stringify(editorBlocks)) {
+    if (blocksChanged) {
+      // Ensure blocks are never empty
+      const blocksToSet = blocks.length === 0 ? [{
+        id: crypto.randomUUID(),
+        type: 'paragraph' as const,
+        content: '',
+        properties: {},
+        children: []
+      }] : blocks;
+
       setBlocks(blocksToSet);
-
-      // Auto-focus first block if it's the only one and empty
-      if (blocksToSet.length === 1 && !blocksToSet[0].content.trim() && !focusedBlockId) {
-        setFocusedBlockId(blocksToSet[0].id);
-      }
     }
-  }, [blocks, editorBlocks, setBlocks, focusedBlockId, setFocusedBlockId]);
+  }, [blocks]); // Only depend on blocks prop, not internal state
+
+  // Separate effect for auto-focusing
+  useEffect(() => {
+    if (editorBlocks.length === 1 && !editorBlocks[0].content.trim() && !focusedBlockId) {
+      setFocusedBlockId(editorBlocks[0].id);
+    }
+  }, [editorBlocks, focusedBlockId, setFocusedBlockId]);
 
   const handleDragEnd = (event: any) => {
     const { active, over } = event;

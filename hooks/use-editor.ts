@@ -23,15 +23,14 @@ export function useEditor(initialBlocks: Block[] = []) {
 
   // Update blocks when initialBlocks change, ensuring minimum blocks
   useEffect(() => {
-    const newBlocks = ensureMinimumBlocks(initialBlocks);
-    if (JSON.stringify(newBlocks) !== JSON.stringify(blocks)) {
+    // Only update if initialBlocks actually changed
+    const blocksChanged = JSON.stringify(initialBlocks) !== JSON.stringify(blocks);
+
+    if (blocksChanged) {
+      const newBlocks = ensureMinimumBlocks(initialBlocks);
       setBlocks(newBlocks);
-      // Auto-focus the first block if it's empty
-      if (newBlocks.length === 1 && !newBlocks[0].content.trim()) {
-        setFocusedBlockId(newBlocks[0].id);
-      }
     }
-  }, [initialBlocks]);
+  }, [initialBlocks]); // Remove blocks from dependency array to prevent circular updates
 
   const createBlock = useCallback((type: BlockType = 'paragraph', content: string = ''): Block => {
     return {
@@ -45,18 +44,18 @@ export function useEditor(initialBlocks: Block[] = []) {
 
   const addBlock = useCallback((afterBlockId?: string, type: BlockType = 'paragraph') => {
     const newBlock = createBlock(type);
-
+    
     setBlocks(currentBlocks => {
       if (!afterBlockId) {
         return [...currentBlocks, newBlock];
       }
-
+      
       const index = currentBlocks.findIndex(block => block.id === afterBlockId);
       const newBlocks = [...currentBlocks];
       newBlocks.splice(index + 1, 0, newBlock);
       return newBlocks;
     });
-
+    
     setFocusedBlockId(newBlock.id);
     return newBlock.id;
   }, [createBlock]);
@@ -90,15 +89,15 @@ export function useEditor(initialBlocks: Block[] = []) {
     setBlocks(currentBlocks => {
       const draggedIndex = currentBlocks.findIndex(block => block.id === draggedId);
       const targetIndex = currentBlocks.findIndex(block => block.id === targetId);
-
+      
       if (draggedIndex === -1 || targetIndex === -1) return currentBlocks;
-
+      
       const newBlocks = [...currentBlocks];
       const [draggedBlock] = newBlocks.splice(draggedIndex, 1);
-
+      
       const insertIndex = position === 'before' ? targetIndex : targetIndex + 1;
       newBlocks.splice(insertIndex, 0, draggedBlock);
-
+      
       return newBlocks;
     });
   }, []);

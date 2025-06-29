@@ -69,6 +69,9 @@ export async function getDb(): Promise<any | null> {
         isArchived: false
       });
     }
+    
+    // Remove the automatic sync to prevent circular updates
+    // Task blocks will be synced through the UI components instead
   }
 
   return dbInstance;
