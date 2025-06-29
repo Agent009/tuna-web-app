@@ -36,6 +36,7 @@ export function EditableBlock({
   const [showSlashMenu, setShowSlashMenu] = useState(false);
   const [slashPosition, setSlashPosition] = useState({ x: 0, y: 0 });
   const contentRef = useRef<HTMLDivElement>(null);
+  const lastCursorPositionRef = useRef<number | null>(null);
   const { tasks, updateTask } = useTasks();
 
   const {
@@ -58,7 +59,18 @@ export function EditableBlock({
     }
   }, [isFocused]);
 
+  // Make sure textDirection is consistently applied
+  useEffect(() => {
+    if (contentRef.current) {
+      // Set direction attributes
+      contentRef.current.dir = textDirection;
+      contentRef.current.style.direction = textDirection;
+      contentRef.current.style.textAlign = textDirection === 'ltr' ? 'left' : 'right';
+    }
+  }, [textDirection]);
+
   const handleInput = (e: React.FormEvent<HTMLDivElement>) => {
+    // Get the current content
     const content = e.currentTarget.textContent || '';
     
     // Check for slash command
@@ -66,6 +78,7 @@ export function EditableBlock({
       const rect = e.currentTarget.getBoundingClientRect();
       const selection = window.getSelection();
       const range = selection?.getRangeAt(0);
+      
       if (range) {
         const rects = range.getClientRects();
         if (rects.length > 0) {
@@ -82,6 +95,16 @@ export function EditableBlock({
       setShowSlashMenu(false);
     }
 
+    // Store current selection before React updates
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      if (range.startContainer.nodeType === Node.TEXT_NODE) {
+        lastCursorPositionRef.current = range.startOffset;
+      }
+    }
+
+    // Update the block content
     onChange({ content });
   };
 
@@ -182,12 +205,14 @@ export function EditableBlock({
             }`}
             onInput={handleInput}
             onFocus={onFocus}
-            onKeyDown={onKeyDown}
+            onKeyDown={(e) => {
+              handleKeyDown(e);
+              onKeyDown(e);
+            }}
             data-placeholder={getPlaceholder()}
             style={{ 
               direction: textDirection, 
               textAlign: textDirection === 'ltr' ? 'left' : 'right',
-              unicodeBidi: 'plaintext'
             }}
           >
             {block.content}
@@ -244,12 +269,14 @@ export function EditableBlock({
               }`}
               onInput={handleInput}
               onFocus={onFocus}
-              onKeyDown={onKeyDown}
+              onKeyDown={(e) => {
+                handleKeyDown(e);
+                onKeyDown(e);
+              }}
               data-placeholder="Task title"
               style={{ 
-                direction: textDirection, 
-                textAlign: textDirection === 'ltr' ? 'left' : 'right',
-                unicodeBidi: 'plaintext'
+                direction: textDirection,
+                textAlign: textDirection === 'ltr' ? 'left' : 'right'
               }}
             >
               {block.content}
@@ -298,12 +325,14 @@ export function EditableBlock({
             className={getClassName()}
             onInput={handleInput}
             onFocus={onFocus}
-            onKeyDown={onKeyDown}
+            onKeyDown={(e) => {
+              handleKeyDown(e);
+              onKeyDown(e);
+            }}
             data-placeholder={getPlaceholder()}
             style={{ 
               direction: textDirection, 
               textAlign: textDirection === 'ltr' ? 'left' : 'right',
-              unicodeBidi: 'plaintext'
             }}
           >
             {block.content}
@@ -324,12 +353,14 @@ export function EditableBlock({
             className={getClassName()}
             onInput={handleInput}
             onFocus={onFocus}
-            onKeyDown={onKeyDown}
+            onKeyDown={(e) => {
+              handleKeyDown(e);
+              onKeyDown(e);
+            }}
             data-placeholder={getPlaceholder()}
             style={{ 
               direction: textDirection, 
               textAlign: textDirection === 'ltr' ? 'left' : 'right',
-              unicodeBidi: 'plaintext'
             }}
           >
             {block.content}
@@ -347,18 +378,72 @@ export function EditableBlock({
         className={getClassName()}
         onInput={handleInput}
         onFocus={onFocus}
-        onKeyDown={onKeyDown}
+        onKeyDown={(e) => {
+          handleKeyDown(e);
+          onKeyDown(e);
+        }}
         data-placeholder={getPlaceholder()}
         style={{ 
           direction: textDirection, 
           textAlign: textDirection === 'ltr' ? 'left' : 'right',
-          unicodeBidi: 'plaintext'
         }}
       >
         {block.content}
       </div>
     );
   };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    // Store cursor position after key press
+    setTimeout(() => {
+      const selection = window.getSelection();
+      if (!selection || selection.rangeCount === 0) return;
+      
+      const range = selection.getRangeAt(0);
+      if (range && contentRef.current) {
+        // Find the text node
+        let textNode: Node | null = null;
+        
+        if (range.startContainer.nodeType === Node.TEXT_NODE) {
+          textNode = range.startContainer;
+        } else {
+          // Try to find the first text node
+          const walker = document.createTreeWalker(
+            contentRef.current,
+            NodeFilter.SHOW_TEXT,
+            null
+          );
+          textNode = walker.nextNode();
+        }
+        
+        if (textNode) {
+          lastCursorPositionRef.current = range.startOffset;
+        }
+      }
+    }, 0);
+  };
+
+  useEffect(() => {
+    if (contentRef.current && lastCursorPositionRef.current !== null && isFocused) {
+      const textNode = contentRef.current.firstChild;
+      if (textNode && textNode.nodeType === Node.TEXT_NODE) {
+        const textLength = textNode.textContent?.length || 0;
+        
+        // Ensure cursor position is valid
+        const position = Math.min(lastCursorPositionRef.current, textLength);
+        
+        // Set cursor position
+        const selection = window.getSelection();
+        const range = document.createRange();
+        
+        range.setStart(textNode, position);
+        range.setEnd(textNode, position);
+        
+        selection?.removeAllRanges();
+        selection?.addRange(range);
+      }
+    }
+  }, [block.content, isFocused]);
 
   return (
     <>
