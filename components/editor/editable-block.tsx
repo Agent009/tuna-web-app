@@ -1,19 +1,21 @@
 "use client";
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Check, Square } from 'lucide-react';
-import { Block, BlockType } from '@/lib/types';
+import { Block, BlockType, TextFormatting } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { SlashCommandMenu } from './slash-command-menu';
+import { RichTextToolbar } from './rich-text-toolbar';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Flag, AlertTriangle } from 'lucide-react';
 import { format } from 'date-fns';
 import { useTasks } from '@/hooks/use-tasks';
 import { useNotes } from '@/hooks/use-notes';
+import { useRichText } from '@/hooks/use-rich-text';
 
 interface EditableBlockProps {
   block: Block;
@@ -41,6 +43,32 @@ export function EditableBlock({
   const { tasks, updateTask, createTaskAsync } = useTasks();
   const { notes, updateNote } = useNotes();
 
+  // Rich text functionality
+  const {
+    selection,
+    currentFormatting,
+    updateSelection,
+    applyFormatting,
+    applyStylesToElement,
+    handleKeyDown: handleRichTextKeyDown,
+    getFormattingAtCursor,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+    setCurrentFormatting,
+  } = useRichText({
+    initialFormatting: block.properties?.formatting || {},
+    onFormatChange: (formatting) => {
+      onChange({
+        properties: {
+          ...block.properties,
+          formatting
+        }
+      });
+    }
+  });
+
   // Extract task properties at component level to avoid conditional hook calls
   const taskProps = block.properties || {};
   const isCompleted = taskProps.completed || false;
@@ -67,6 +95,14 @@ export function EditableBlock({
   useEffect(() => {
     if (isFocused && contentRef.current) {
       contentRef.current.focus();
+      
+      // Update formatting based on cursor position
+      setTimeout(() => {
+        if (contentRef.current) {
+          const formatting = getFormattingAtCursor(contentRef.current);
+          setCurrentFormatting(formatting);
+        }
+      }, 0);
     }
   }, [isFocused]);
 
@@ -80,14 +116,21 @@ export function EditableBlock({
     }
   }, [textDirection]);
 
+  // Apply existing formatting to the element
+  useEffect(() => {
+    if (contentRef.current && block.properties?.formatting) {
+      applyStylesToElement(contentRef.current, block.properties.formatting);
+    }
+  }, [block.properties?.formatting, applyStylesToElement]);
+
   // Handle task creation at component level to avoid conditional hook calls
   useEffect(() => {
     if (block.type === 'task' && !taskId && block.content.trim()) {
       // Find the note this block belongs to
-      const currentNote = notes.find(note =>
+      const currentNote = notes.find(note => 
         note.content.some(b => b.id === block.id)
       );
-
+      
       if (currentNote) {
         // Create a task in the task system
         createTaskAsync({
@@ -101,9 +144,9 @@ export function EditableBlock({
         }).then((createdTask) => {
           // Update the block to include the taskId
           onChange({
-            properties: {
-              ...taskProps,
-              taskId: createdTask.id
+            properties: { 
+              ...taskProps, 
+              taskId: createdTask.id 
             }
           });
         }).catch((error) => {
@@ -151,6 +194,18 @@ export function EditableBlock({
     // Update the block content
     onChange({ content });
   };
+
+  const handleSelectionChange = useCallback(() => {
+    if (contentRef.current) {
+      updateSelection(contentRef.current);
+    }
+  }, [updateSelection]);
+
+  const handleFormatting = useCallback((formatting: Partial<TextFormatting>) => {
+    if (contentRef.current) {
+      applyFormatting(contentRef.current, formatting);
+    }
+  }, [applyFormatting]);
 
   const handleSlashSelect = (command: string) => {
     setShowSlashMenu(false);
@@ -253,6 +308,8 @@ export function EditableBlock({
               handleKeyDown(e);
               onKeyDown(e);
             }}
+            onMouseUp={handleSelectionChange}
+            onKeyUp={handleSelectionChange}
             data-placeholder={getPlaceholder()}
             style={{
               direction: textDirection,
@@ -311,7 +368,7 @@ export function EditableBlock({
                 onKeyDown(e);
               }}
               data-placeholder="Task title"
-              style={{ 
+              style={{
                 direction: textDirection,
                 textAlign: textDirection === 'ltr' ? 'left' : 'right'
               }}
@@ -366,9 +423,11 @@ export function EditableBlock({
               handleKeyDown(e);
               onKeyDown(e);
             }}
+            onMouseUp={handleSelectionChange}
+            onKeyUp={handleSelectionChange}
             data-placeholder={getPlaceholder()}
-            style={{ 
-              direction: textDirection, 
+            style={{
+              direction: textDirection,
               textAlign: textDirection === 'ltr' ? 'left' : 'right',
             }}
           >
@@ -394,9 +453,11 @@ export function EditableBlock({
               handleKeyDown(e);
               onKeyDown(e);
             }}
+            onMouseUp={handleSelectionChange}
+            onKeyUp={handleSelectionChange}
             data-placeholder={getPlaceholder()}
-            style={{ 
-              direction: textDirection, 
+            style={{
+              direction: textDirection,
               textAlign: textDirection === 'ltr' ? 'left' : 'right',
             }}
           >
@@ -419,9 +480,11 @@ export function EditableBlock({
           handleKeyDown(e);
           onKeyDown(e);
         }}
+        onMouseUp={handleSelectionChange}
+        onKeyUp={handleSelectionChange}
         data-placeholder={getPlaceholder()}
-        style={{ 
-          direction: textDirection, 
+        style={{
+          direction: textDirection,
           textAlign: textDirection === 'ltr' ? 'left' : 'right',
         }}
       >
@@ -431,6 +494,9 @@ export function EditableBlock({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    // Handle rich text keyboard shortcuts first
+    handleRichTextKeyDown(e.nativeEvent);
+    
     // Store cursor position after key press
     setTimeout(() => {
       const selection = window.getSelection();
@@ -515,6 +581,16 @@ export function EditableBlock({
           onClose={() => setShowSlashMenu(false)}
         />
       )}
+
+      <RichTextToolbar
+        selection={selection}
+        currentFormatting={currentFormatting}
+        onFormat={handleFormatting}
+        onUndo={undo}
+        onRedo={redo}
+        canUndo={canUndo}
+        canRedo={canRedo}
+      />
     </>
   );
 }

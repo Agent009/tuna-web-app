@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Filter,
-  Search,
+import { 
+  Filter, 
+  Search, 
   Calendar,
   Tag,
   Star,
@@ -70,9 +70,9 @@ export function NoteFilterBar({ className }: NoteFilterBarProps) {
     deleteSavedFilter,
     hasActiveFilters
   } = useNoteFilters();
-
+  
   const { notebooks } = useNotes();
-
+  
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [saveFilterName, setSaveFilterName] = useState('');
   const [dateRangeOpen, setDateRangeOpen] = useState(false);
@@ -367,8 +367,8 @@ export function NoteFilterBar({ className }: NoteFilterBarProps) {
             variant={filters.favorites ? "default" : "outline"}
             size="sm"
             onClick={handleFavoritesToggle}
-            className={filters.favorites
-              ? "bg-accent text-accent-foreground"
+            className={filters.favorites 
+              ? "bg-accent text-accent-foreground" 
               : "border-border text-foreground hover:bg-accent hover:text-accent-foreground"
             }
           >
@@ -378,13 +378,13 @@ export function NoteFilterBar({ className }: NoteFilterBarProps) {
 
           {/* Sort Controls */}
           <Separator orientation="vertical" className="h-6" />
-
+          
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="border-border text-foreground hover:bg-accent hover:text-accent-foreground">
                 {sortAscending ? <SortAsc className="h-3 w-3 mr-1" /> : <SortDesc className="h-3 w-3 mr-1" />}
-                Sort: {sortBy === 'updated' ? 'Last Modified' :
-                       sortBy === 'created' ? 'Created' :
+                Sort: {sortBy === 'updated' ? 'Last Modified' : 
+                       sortBy === 'created' ? 'Created' : 
                        sortBy === 'title' ? 'Title' : 'Alphabetical'}
                 <ChevronDown className="h-3 w-3 ml-1" />
               </Button>
@@ -480,7 +480,7 @@ export function NoteFilterBar({ className }: NoteFilterBarProps) {
               className="flex items-center gap-2 flex-wrap"
             >
               <span className="text-sm text-muted-foreground">Active filters:</span>
-
+              
               {filters.search && (
                 <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20">
                   Search: "{filters.search}"

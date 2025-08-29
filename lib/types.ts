@@ -25,8 +25,29 @@ export interface Block {
   id: string;
   type: BlockType;
   content: string;
-  properties?: Record<string, any>;
+  properties?: {
+    formatting?: TextFormatting;
+    [key: string]: any;
+  };
   children?: Block[];
+}
+
+export interface TextFormatting {
+  bold?: boolean;
+  italic?: boolean;
+  underline?: boolean;
+  strikethrough?: boolean;
+  color?: string;
+  backgroundColor?: string;
+  fontSize?: string;
+  fontFamily?: string;
+  align?: 'left' | 'center' | 'right' | 'justify';
+}
+
+export interface TextSelection {
+  start: number;
+  end: number;
+  text: string;
 }
 
 export type BlockType =

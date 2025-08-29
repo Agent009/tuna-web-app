@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -43,7 +43,7 @@ export function BlockEditor({ blocks, onChange, textDirection = 'ltr', className
   useEffect(() => {
     // Only update if blocks actually changed (deep comparison)
     const blocksChanged = JSON.stringify(blocks) !== JSON.stringify(editorBlocks);
-
+    
     if (blocksChanged) {
       // Ensure blocks are never empty
       const blocksToSet = blocks.length === 0 ? [{
@@ -53,10 +53,22 @@ export function BlockEditor({ blocks, onChange, textDirection = 'ltr', className
         properties: {},
         children: []
       }] : blocks;
-
+      
       setBlocks(blocksToSet);
     }
   }, [blocks]); // Only depend on blocks prop, not internal state
+
+  // Handle global selection changes for rich text formatting
+  const handleGlobalSelectionChange = useCallback(() => {
+    // This will be handled by individual blocks
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener('selectionchange', handleGlobalSelectionChange);
+    return () => {
+      document.removeEventListener('selectionchange', handleGlobalSelectionChange);
+    };
+  }, [handleGlobalSelectionChange]);
 
   // Separate effect for auto-focusing
   useEffect(() => {

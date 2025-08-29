@@ -3,10 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "format": "prettier --check \"**/*.[jt]s?(x)\"",
+    "format:fix": "prettier --write \"**/*.[jt]s?(x)\"",
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "check-types": "tsc --noEmit",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "dev": "next dev -p 3000",
+    "start": "next start -p 3000"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.1.0",
