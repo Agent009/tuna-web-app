@@ -11,7 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { SlashCommandMenu } from './slash-command-menu';
 import { RichTextToolbar } from './rich-text-toolbar';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Flag, AlertTriangle } from 'lucide-react';
+import { Calendar, Flag, TriangleAlert as AlertTriangle } from 'lucide-react';
 import { format } from 'date-fns';
 import { useTasks } from '@/hooks/use-tasks';
 import { useNotes } from '@/hooks/use-notes';
@@ -43,7 +43,20 @@ export function EditableBlock({
   const { tasks, updateTask, createTaskAsync } = useTasks();
   const { notes, updateNote } = useNotes();
 
-  // Rich text functionality
+  // Rich text functionality - only initialize if not a task block
+  const richTextEnabled = block.type !== 'task' && block.type !== 'todo' && block.type !== 'divider';
+  const richTextHook = useRichText({
+    initialFormatting: block.properties?.formatting || {},
+    onFormatChange: (formatting) => {
+      onChange({
+        properties: {
+          ...block.properties,
+          formatting
+        }
+      });
+    }
+  });
+
   const {
     selection,
     currentFormatting,
@@ -57,17 +70,20 @@ export function EditableBlock({
     canUndo,
     canRedo,
     setCurrentFormatting,
-  } = useRichText({
-    initialFormatting: block.properties?.formatting || {},
-    onFormatChange: (formatting) => {
-      onChange({
-        properties: {
-          ...block.properties,
-          formatting
-        }
-      });
-    }
-  });
+  } = richTextEnabled ? richTextHook : {
+    selection: null,
+    currentFormatting: {},
+    updateSelection: () => {},
+    applyFormatting: () => {},
+    applyStylesToElement: () => {},
+    handleKeyDown: () => {},
+    getFormattingAtCursor: () => ({}),
+    undo: () => {},
+    redo: () => {},
+    canUndo: false,
+    canRedo: false,
+    setCurrentFormatting: () => {},
+  };
 
   // Extract task properties at component level to avoid conditional hook calls
   const taskProps = block.properties || {};
@@ -95,7 +111,7 @@ export function EditableBlock({
   useEffect(() => {
     if (isFocused && contentRef.current) {
       contentRef.current.focus();
-      
+
       // Update formatting based on cursor position
       setTimeout(() => {
         if (contentRef.current) {
@@ -127,10 +143,10 @@ export function EditableBlock({
   useEffect(() => {
     if (block.type === 'task' && !taskId && block.content.trim()) {
       // Find the note this block belongs to
-      const currentNote = notes.find(note => 
+      const currentNote = notes.find(note =>
         note.content.some(b => b.id === block.id)
       );
-      
+
       if (currentNote) {
         // Create a task in the task system
         createTaskAsync({
@@ -144,9 +160,9 @@ export function EditableBlock({
         }).then((createdTask) => {
           // Update the block to include the taskId
           onChange({
-            properties: { 
-              ...taskProps, 
-              taskId: createdTask.id 
+            properties: {
+              ...taskProps,
+              taskId: createdTask.id
             }
           });
         }).catch((error) => {
@@ -495,18 +511,18 @@ export function EditableBlock({
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     // Handle rich text keyboard shortcuts first
-    handleRichTextKeyDown(e.nativeEvent);
-    
+    handleRichTextKeyDown(e.nativeEvent, contentRef.current || undefined);
+
     // Store cursor position after key press
     setTimeout(() => {
       const selection = window.getSelection();
       if (!selection || selection.rangeCount === 0) return;
-      
+
       const range = selection.getRangeAt(0);
       if (range && contentRef.current) {
         // Find the text node
         let textNode: Node | null = null;
-        
+
         if (range.startContainer.nodeType === Node.TEXT_NODE) {
           textNode = range.startContainer;
         } else {
@@ -514,11 +530,12 @@ export function EditableBlock({
           const walker = document.createTreeWalker(
             contentRef.current,
             NodeFilter.SHOW_TEXT,
-            null
+            null,
+            false
           );
           textNode = walker.nextNode();
         }
-        
+
         if (textNode) {
           lastCursorPositionRef.current = range.startOffset;
         }
@@ -531,17 +548,17 @@ export function EditableBlock({
       const textNode = contentRef.current.firstChild;
       if (textNode && textNode.nodeType === Node.TEXT_NODE) {
         const textLength = textNode.textContent?.length || 0;
-        
+
         // Ensure cursor position is valid
         const position = Math.min(lastCursorPositionRef.current, textLength);
-        
+
         // Set cursor position
         const selection = window.getSelection();
         const range = document.createRange();
-        
+
         range.setStart(textNode, position);
         range.setEnd(textNode, position);
-        
+
         selection?.removeAllRanges();
         selection?.addRange(range);
       }
@@ -582,15 +599,17 @@ export function EditableBlock({
         />
       )}
 
-      <RichTextToolbar
-        selection={selection}
-        currentFormatting={currentFormatting}
-        onFormat={handleFormatting}
-        onUndo={undo}
-        onRedo={redo}
-        canUndo={canUndo}
-        canRedo={canRedo}
-      />
+      {richTextEnabled && (
+        <RichTextToolbar
+          selection={selection}
+          currentFormatting={currentFormatting}
+          onFormat={handleFormatting}
+          onUndo={undo}
+          onRedo={redo}
+          canUndo={canUndo}
+          canRedo={canRedo}
+        />
+      )}
     </>
   );
 }

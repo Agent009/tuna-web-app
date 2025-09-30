@@ -51,7 +51,7 @@ export default function Home() {
       title: '',
       content: [{
         id: crypto.randomUUID(),
-        type: 'paragraph',
+        type: 'paragraph' as const,
         content: '',
         properties: {},
         children: []

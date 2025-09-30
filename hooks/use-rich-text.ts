@@ -140,25 +140,25 @@ export function useRichText({ initialFormatting = {}, onFormatChange }: UseRichT
     }
   }, [history, historyIndex, onFormatChange]);
 
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+  const handleKeyDown = useCallback((e: KeyboardEvent, element?: HTMLElement) => {
     if (e.ctrlKey || e.metaKey) {
       switch (e.key.toLowerCase()) {
         case 'b':
           e.preventDefault();
-          if (selection) {
-            applyFormatting(e.target as HTMLElement, { bold: !currentFormatting.bold });
+          if (selection && element && selection.start !== selection.end) {
+            applyFormatting(element, { bold: !currentFormatting.bold });
           }
           break;
         case 'i':
           e.preventDefault();
-          if (selection) {
-            applyFormatting(e.target as HTMLElement, { italic: !currentFormatting.italic });
+          if (selection && element && selection.start !== selection.end) {
+            applyFormatting(element, { italic: !currentFormatting.italic });
           }
           break;
         case 'u':
           e.preventDefault();
-          if (selection) {
-            applyFormatting(e.target as HTMLElement, { underline: !currentFormatting.underline });
+          if (selection && element && selection.start !== selection.end) {
+            applyFormatting(element, { underline: !currentFormatting.underline });
           }
           break;
         case 'z':
@@ -183,14 +183,14 @@ export function useRichText({ initialFormatting = {}, onFormatChange }: UseRichT
 
     const range = windowSelection.getRangeAt(0);
     let node = range.startContainer;
-    
+
     // If text node, get parent element
     if (node.nodeType === Node.TEXT_NODE) {
       node = node.parentNode!;
     }
 
-    const element_node = node as HTMLElement;
-    const computedStyle = window.getComputedStyle(element_node);
+    const elementNode = node as HTMLElement;
+    const computedStyle = window.getComputedStyle(elementNode);
 
     return {
       bold: computedStyle.fontWeight === 'bold' || parseInt(computedStyle.fontWeight) >= 600,

@@ -137,9 +137,9 @@ export function useTasks() {
     mutationFn: async (updates: Array<{ id: string; updates: Partial<Task> }>) => {
       const db = await getDb();
       if (!db) throw new Error('Database not available');
-      
+
       await Promise.all(
-        updates.map(({ id, updates }) => 
+        updates.map(({ id, updates }) =>
           db.tasks.update(id, { ...updates, updatedAt: new Date() })
         )
       );
@@ -157,9 +157,9 @@ export function useTasks() {
     mutationFn: async (tasks: Task[]) => {
       const db = await getDb();
       if (!db) throw new Error('Database not available');
-      
+
       await Promise.all(
-        tasks.map((task, index) => 
+        tasks.map((task, index) =>
           db.tasks.update(task.id, { order: index + 1, updatedAt: new Date() })
         )
       );
@@ -186,7 +186,7 @@ export function useTasks() {
   const sortTasks = (tasks: Task[], sortBy: TaskSortBy, ascending = true) => {
     const sorted = [...tasks].sort((a, b) => {
       let comparison = 0;
-      
+
       switch (sortBy) {
         case 'dueDate':
           if (!a.dueDate && !b.dueDate) comparison = 0;
@@ -210,10 +210,10 @@ export function useTasks() {
         default:
           comparison = a.order - b.order;
       }
-      
+
       return ascending ? comparison : -comparison;
     });
-    
+
     return sorted;
   };
 
@@ -221,7 +221,6 @@ export function useTasks() {
     tasks: tasksQuery.data || [],
     isLoading: tasksQuery.isLoading,
     createTask: createTaskMutation.mutate,
-    createTaskAsync: createTaskMutation.mutateAsync,
     createTaskAsync: createTaskMutation.mutateAsync,
     updateTask: updateTaskMutation.mutate,
     deleteTask: deleteTaskMutation.mutate,

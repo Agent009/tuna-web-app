@@ -9,7 +9,7 @@ export function useEditor(initialBlocks: Block[] = []) {
     if (blocks.length === 0) {
       return [{
         id: crypto.randomUUID(),
-        type: 'paragraph',
+        type: 'paragraph' as const,
         content: '',
         properties: {},
         children: []

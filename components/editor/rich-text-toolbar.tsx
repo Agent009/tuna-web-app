@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Bold,
@@ -11,11 +11,6 @@ import {
   AlignJustify,
   Type,
   Palette,
-  List,
-  ListOrdered,
-  Heading1,
-  Heading2,
-  Heading3,
   Undo,
   Redo
 } from 'lucide-react';
@@ -77,13 +72,9 @@ export function RichTextToolbar({
   onRedo,
   canUndo,
   canRedo,
-  className
+  className = ''
 }: RichTextToolbarProps) {
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    setIsVisible(!!selection && selection.start !== selection.end);
-  }, [selection]);
+  const isVisible = !!selection && selection.start !== selection.end;
 
   const handleFormatToggle = (property: keyof TextFormatting) => {
     onFormat({ [property]: !currentFormatting[property] });

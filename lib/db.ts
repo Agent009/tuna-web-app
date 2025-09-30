@@ -56,7 +56,7 @@ export async function getDb(): Promise<any | null> {
         title: 'Things to do',
         content: [{
           id: crypto.randomUUID(),
-          type: 'paragraph',
+          type: 'paragraph' as const,
           content: 'Your default task list',
           properties: {},
           children: []
