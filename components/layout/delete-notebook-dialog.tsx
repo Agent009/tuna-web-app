@@ -12,7 +12,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useNotes } from '@/hooks/use-notes';
-import { Notebook } from '@/lib/types';
+import { Notebook, Note } from '@/lib/types';
 
 interface DeleteNotebookDialogProps {
   open: boolean;

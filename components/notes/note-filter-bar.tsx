@@ -33,7 +33,7 @@ import {
 } from '@/components/ui/dialog';
 import { useNoteFilters } from '@/hooks/use-note-filters';
 import { useNotes } from '@/hooks/use-notes';
-import { NoteFilters, NoteSortBy } from '@/lib/types';
+import { NoteFilters, NoteSortBy, Notebook } from '@/lib/types';
 
 interface NoteFilterBarProps {
   className?: string;

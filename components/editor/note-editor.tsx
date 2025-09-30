@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
-import { Note, Block } from '@/lib/types';
+import { Note, Block, Notebook } from '@/lib/types';
 import { BlockEditor } from './block-editor';
 import { useNotes } from '@/hooks/use-notes';
 import { useAutosave } from '@/hooks/use-autosave';
