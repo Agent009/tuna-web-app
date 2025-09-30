@@ -116,7 +116,7 @@ export function NoteFilterBar({ className }: NoteFilterBarProps) {
     setDateRangeOpen(false);
   };
 
-  const handleCustomDateRange = (range: { from?: Date; to?: Date }) => {
+  const handleCustomDateRange = (range: { from?: Date; to?: Date } | undefined) => {
     if (!range) {
       updateFilter('dateRange', { start: null, end: null });
       return;
@@ -127,7 +127,7 @@ export function NoteFilterBar({ className }: NoteFilterBarProps) {
     });
   };
 
-  const handleCreatedDateRange = (range: { from?: Date; to?: Date }) => {
+  const handleCreatedDateRange = (range: { from?: Date; to?: Date } | undefined) => {
     if (!range) return;
     updateFilter('createdDateRange', {
       start: range.from || null,

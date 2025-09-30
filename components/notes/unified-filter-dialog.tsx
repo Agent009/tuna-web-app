@@ -114,7 +114,7 @@ export function UnifiedFilterDialog({ open, onOpenChange, selectedFilter }: Unif
     setDateRangeOpen(false);
   };
 
-  const handleCustomDateRange = (range: { from?: Date; to?: Date }) => {
+  const handleCustomDateRange = (range: { from?: Date; to?: Date } | undefined) => {
     if (!range) {
       updateFilter('dateRange', { start: null, end: null });
       return;
@@ -125,7 +125,7 @@ export function UnifiedFilterDialog({ open, onOpenChange, selectedFilter }: Unif
     });
   };
 
-  const handleCreatedDateRange = (range: { from?: Date; to?: Date }) => {
+  const handleCreatedDateRange = (range: { from?: Date; to?: Date } | undefined) => {
     if (!range) {
       updateFilter('createdDateRange', { start: null, end: null });
       return;
@@ -222,8 +222,8 @@ export function UnifiedFilterDialog({ open, onOpenChange, selectedFilter }: Unif
                       variant={filters.tags.includes(tag) ? "default" : "outline"}
                       size="sm"
                       onClick={() => handleTagToggle(tag)}
-                      className={filters.tags.includes(tag) 
-                        ? "bg-accent text-accent-foreground" 
+                      className={filters.tags.includes(tag)
+                        ? "bg-accent text-accent-foreground"
                         : "border-border text-foreground hover:bg-accent hover:text-accent-foreground"
                       }
                     >
@@ -240,43 +240,44 @@ export function UnifiedFilterDialog({ open, onOpenChange, selectedFilter }: Unif
             {/* Notebooks Section */}
             {/* Only show Notebooks filter when viewing "All Notes" */}
             {(!selectedFilter || selectedFilter === 'all') && (
-              <div className="space-y-3">
-                <Label className="text-sm font-medium flex items-center gap-2">
-                  <BookOpen className="h-4 w-4" />
-                  Notebooks
-                  {filters.notebooks.length > 0 && (
-                    <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20">
-                      {filters.notebooks.length} selected
-                    </Badge>
-                  )}
-                </Label>
-                <div className="flex flex-wrap gap-2">
-                  {notebooks.map((notebook: Notebook) => (
-                    <Button
-                      key={notebook.id}
-                      variant={filters.notebooks.includes(notebook.id) ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => handleNotebookToggle(notebook.id)}
-                      className={filters.notebooks.includes(notebook.id) 
-                        ? "bg-accent text-accent-foreground" 
-                        : "border-border text-foreground hover:bg-accent hover:text-accent-foreground"
-                      }
-                    >
-                      <div className="flex items-center gap-2">
-                        {filters.notebooks.includes(notebook.id) && <Check className="h-3 w-3" />}
-                        <div
-                          className="w-3 h-3 rounded-full"
-                          style={{ backgroundColor: notebook.color }}
-                        />
-                        {notebook.name}
-                      </div>
-                    </Button>
-                  ))}
+              <>
+                <div className="space-y-3">
+                  <Label className="text-sm font-medium flex items-center gap-2">
+                    <BookOpen className="h-4 w-4" />
+                    Notebooks
+                    {filters.notebooks.length > 0 && (
+                      <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20">
+                        {filters.notebooks.length} selected
+                      </Badge>
+                    )}
+                  </Label>
+                  <div className="flex flex-wrap gap-2">
+                    {notebooks.map((notebook: Notebook) => (
+                      <Button
+                        key={notebook.id}
+                        variant={filters.notebooks.includes(notebook.id) ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => handleNotebookToggle(notebook.id)}
+                        className={filters.notebooks.includes(notebook.id)
+                          ? "bg-accent text-accent-foreground"
+                          : "border-border text-foreground hover:bg-accent hover:text-accent-foreground"
+                        }
+                      >
+                        <div className="flex items-center gap-2">
+                          {filters.notebooks.includes(notebook.id) && <Check className="h-3 w-3" />}
+                          <div
+                            className="w-3 h-3 rounded-full"
+                            style={{ backgroundColor: notebook.color }}
+                          />
+                          {notebook.name}
+                        </div>
+                      </Button>
+                    ))}
+                  </div>
                 </div>
-              </div>
+                <Separator />
+              </>
             )}
-
-            <Separator />
 
             {/* Favorites Section */}
             <div className="space-y-3">

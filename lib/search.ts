@@ -25,7 +25,7 @@ export class SearchEngine {
     return results
       .map(result => {
         const note = result.item;
-        const highlights = this.extractHighlights(result.matches || []);
+        const highlights = this.extractHighlights([...(result.matches || [])]);
         
         return {
           id: note.id,

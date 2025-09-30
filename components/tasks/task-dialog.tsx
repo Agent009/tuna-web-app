@@ -35,7 +35,7 @@ import {
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { useTasks } from '@/hooks/use-tasks';
 import { useNotes } from '@/hooks/use-notes';
-import { Task, Note } from '@/lib/types';
+import { Task } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
 const taskSchema = z.object({
@@ -106,12 +106,12 @@ export function TaskDialog({ open, onOpenChange, task, defaultNoteId }: TaskDial
   // Filter notes based on search query
   const filteredNotes = notes.filter((note: any) => {
     if (!noteSearchQuery.trim()) return true;
-    
+
     const query = noteSearchQuery.toLowerCase();
     const noteTitle = (note.title || 'Untitled').toLowerCase();
     const notebook = notebooks.find((nb: any) => nb.id === note.notebookId);
     const notebookName = notebook?.name.toLowerCase() || '';
-    
+
     return noteTitle.includes(query) || notebookName.includes(query);
   });
 
@@ -126,7 +126,7 @@ export function TaskDialog({ open, onOpenChange, task, defaultNoteId }: TaskDial
   const getSelectedNoteDisplay = () => {
     const selectedNote = notes.find((n: any) => n.id === form.watch('noteId'));
     if (!selectedNote) return 'Select a note...';
-    
+
     const notebook = getNotebookForNote(selectedNote.id);
     return selectedNote.title || 'Untitled';
   };
@@ -142,7 +142,7 @@ export function TaskDialog({ open, onOpenChange, task, defaultNoteId }: TaskDial
         ...data,
         completed: false
       };
-      
+
       // Use async creation to get the task ID and then add block to note
       createTaskAsync(newTaskData)
         .then((createdTask) => {
@@ -163,7 +163,7 @@ export function TaskDialog({ open, onOpenChange, task, defaultNoteId }: TaskDial
               },
               children: []
             };
-            
+
             updateNote({
               id: selectedNote.id,
               updates: {
@@ -176,7 +176,7 @@ export function TaskDialog({ open, onOpenChange, task, defaultNoteId }: TaskDial
           console.error('Failed to create task:', error);
         });
     }
-    
+
     onOpenChange(false);
   };
 
@@ -189,7 +189,7 @@ export function TaskDialog({ open, onOpenChange, task, defaultNoteId }: TaskDial
   const setQuickDueDate = (type: 'today' | 'tomorrow' | 'week') => {
     const today = new Date();
     let date: Date;
-    
+
     switch (type) {
       case 'today':
         date = today;
@@ -201,7 +201,7 @@ export function TaskDialog({ open, onOpenChange, task, defaultNoteId }: TaskDial
         date = addDays(today, 7);
         break;
     }
-    
+
     form.setValue('dueDate', date);
     setDueDateCalendarOpen(false);
   };
@@ -209,9 +209,9 @@ export function TaskDialog({ open, onOpenChange, task, defaultNoteId }: TaskDial
   const setQuickReminder = (type: '1hour' | '4hours' | 'custom') => {
     const dueDate = form.getValues('dueDate');
     if (!dueDate) return;
-    
+
     let reminderDate: Date;
-    
+
     switch (type) {
       case '1hour':
         reminderDate = addHours(dueDate, -1);
@@ -222,14 +222,14 @@ export function TaskDialog({ open, onOpenChange, task, defaultNoteId }: TaskDial
       default:
         return;
     }
-    
+
     form.setValue('reminder', reminderDate);
     setReminderCalendarOpen(false);
   };
 
   // Get default note (Things to do) if no notes exist
   const getDefaultNoteId = () => {
-    const thingsToDoNote = notes.find((note: Note) => note.title === 'Things to do');
+    const thingsToDoNote = notes.find((note: any) => note.title === 'Things to do');
     return thingsToDoNote?.id || notes[0]?.id || '';
   };
 
@@ -272,8 +272,8 @@ export function TaskDialog({ open, onOpenChange, task, defaultNoteId }: TaskDial
                     {form.watch('noteId') && (
                       <div
                         className="w-3 h-3 rounded-full flex-shrink-0"
-                        style={{ 
-                          backgroundColor: getNotebookForNote(form.watch('noteId'))?.color || '#6B7280' 
+                        style={{
+                          backgroundColor: getNotebookForNote(form.watch('noteId'))?.color || '#6B7280'
                         }}
                       />
                     )}
@@ -296,7 +296,7 @@ export function TaskDialog({ open, onOpenChange, task, defaultNoteId }: TaskDial
                   <CommandEmpty>No notes found.</CommandEmpty>
                   <CommandList>
                     <CommandGroup className="max-h-64 overflow-auto">
-                      {filteredNotes.map((note) => {
+                      {filteredNotes.map((note: any) => {
                         const notebook = getNotebookForNote(note.id);
                         return (
                           <CommandItem
