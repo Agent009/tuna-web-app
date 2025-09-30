@@ -19,12 +19,12 @@ interface NoteListProps {
   selectedNoteId: string | null;
 }
 
-export function NoteList({
-  selectedNotebook,
-  selectedFilter,
-  onSelectNote,
+export function NoteList({ 
+  selectedNotebook, 
+  selectedFilter, 
+  onSelectNote, 
   onCreateNote,
-  selectedNoteId
+  selectedNoteId 
 }: NoteListProps) {
   const { notebooks } = useNotes();
   const { filteredNotes, totalFilteredCount } = useNoteFilters();
@@ -53,7 +53,7 @@ export function NoteList({
   });
 
   const getNotebookName = (notebookId: string) => {
-    return notebooks.find(nb => nb.id === notebookId)?.name || 'Unknown';
+    return notebooks.find((nb: Notebook) => nb.id === notebookId)?.name || 'Unknown';
   };
 
   return (
@@ -62,10 +62,10 @@ export function NoteList({
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-semibold text-lg text-foreground">
             <div className="flex items-center gap-2">
-              {selectedNotebook
+              {selectedNotebook 
                 ? getNotebookName(selectedNotebook)
-                : selectedFilter === 'favorites'
-                  ? 'Favorites'
+                : selectedFilter === 'favorites' 
+                  ? 'Favorites' 
                   : selectedFilter === 'archived'
                     ? 'Archived'
                     : 'All Notes'

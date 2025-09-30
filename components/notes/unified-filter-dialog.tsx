@@ -2,23 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Filter,
-  Search,
-  Calendar,
-  Tag,
-  Star,
-  BookOpen,
-  X,
-  Plus,
-  Save,
-  SortAsc,
-  SortDesc,
-  Clock,
-  CalendarDays,
-  Check,
-  Trash2
-} from 'lucide-react';
+import { Filter, Search, Calendar, Tag, Star, BookOpen, X, Plus, Save, Import as SortAsc, Dessert as SortDesc, Clock, CalendarDays, Check, Trash2 } from 'lucide-react';
 import { format, subDays, startOfDay, endOfDay } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -62,9 +46,9 @@ export function UnifiedFilterDialog({ open, onOpenChange, selectedFilter }: Unif
     deleteSavedFilter,
     hasActiveFilters
   } = useNoteFilters();
-
+  
   const { notebooks } = useNotes();
-
+  
   const [saveFilterName, setSaveFilterName] = useState('');
   const [showSaveSection, setShowSaveSection] = useState(false);
   const [dateRangeOpen, setDateRangeOpen] = useState(false);
@@ -158,11 +142,11 @@ export function UnifiedFilterDialog({ open, onOpenChange, selectedFilter }: Unif
   };
 
   const getNotebookName = (notebookId: string) => {
-    return notebooks.find(nb => nb.id === notebookId)?.name || 'Unknown';
+    return notebooks.find((nb: Notebook) => nb.id === notebookId)?.name || 'Unknown';
   };
 
   const getNotebookColor = (notebookId: string) => {
-    return notebooks.find(nb => nb.id === notebookId)?.color || '#6B7280';
+    return notebooks.find((nb: Notebook) => nb.id === notebookId)?.color || '#6B7280';
   };
 
   return (
@@ -230,8 +214,8 @@ export function UnifiedFilterDialog({ open, onOpenChange, selectedFilter }: Unif
                       variant={filters.tags.includes(tag) ? "default" : "outline"}
                       size="sm"
                       onClick={() => handleTagToggle(tag)}
-                      className={filters.tags.includes(tag)
-                        ? "bg-accent text-accent-foreground"
+                      className={filters.tags.includes(tag) 
+                        ? "bg-accent text-accent-foreground" 
                         : "border-border text-foreground hover:bg-accent hover:text-accent-foreground"
                       }
                     >
@@ -259,14 +243,14 @@ export function UnifiedFilterDialog({ open, onOpenChange, selectedFilter }: Unif
                   )}
                 </Label>
                 <div className="flex flex-wrap gap-2">
-                  {notebooks.map((notebook) => (
+                  {notebooks.map((notebook: Notebook) => (
                     <Button
                       key={notebook.id}
                       variant={filters.notebooks.includes(notebook.id) ? "default" : "outline"}
                       size="sm"
                       onClick={() => handleNotebookToggle(notebook.id)}
-                      className={filters.notebooks.includes(notebook.id)
-                        ? "bg-accent text-accent-foreground"
+                      className={filters.notebooks.includes(notebook.id) 
+                        ? "bg-accent text-accent-foreground" 
                         : "border-border text-foreground hover:bg-accent hover:text-accent-foreground"
                       }
                     >
@@ -312,7 +296,7 @@ export function UnifiedFilterDialog({ open, onOpenChange, selectedFilter }: Unif
                 <Calendar className="h-4 w-4" />
                 Date Filters
               </Label>
-
+              
               {/* Last Modified */}
               <div className="space-y-2">
                 <Label className="text-xs text-muted-foreground flex items-center gap-1">

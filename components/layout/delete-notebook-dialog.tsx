@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle } from 'lucide-react';
+import { TriangleAlert as AlertTriangle } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,7 +30,7 @@ export function DeleteNotebookDialog({ open, onOpenChange, notebook }: DeleteNot
     onOpenChange(false);
   };
 
-  const notesInNotebook = notes.filter(note => note.notebookId === notebook?.id && !note.isArchived).length;
+  const notesInNotebook = notes.filter((note: Note) => note.notebookId === notebook?.id && !note.isArchived).length;
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>

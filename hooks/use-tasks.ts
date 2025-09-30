@@ -26,9 +26,9 @@ export function useTasks() {
 
   // Computed task counts
   const totalTasksCount = tasksQuery.data?.length || 0;
-  const pendingTasksCount = tasksQuery.data?.filter(task => !task.completed).length || 0;
-  const completedTasksCount = tasksQuery.data?.filter(task => task.completed).length || 0;
-  const flaggedTasksCount = tasksQuery.data?.filter(task => task.flagged).length || 0;
+  const pendingTasksCount = tasksQuery.data?.filter((task: Task) => !task.completed).length || 0;
+  const completedTasksCount = tasksQuery.data?.filter((task: Task) => task.completed).length || 0;
+  const flaggedTasksCount = tasksQuery.data?.filter((task: Task) => task.flagged).length || 0;
   const createTaskMutation = useMutation({
     mutationFn: async (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'order'>) => {
       const db = await getDb();
@@ -86,38 +86,38 @@ export function useTasks() {
       // Get the task before deleting to find associated note blocks
       const taskToDelete = await db.tasks.get(taskId);
       if (!taskToDelete) throw new Error('Task not found');
-
+      
       await db.tasks.delete(taskId);
       return { taskId, noteId: taskToDelete.noteId };
     },
     onSuccess: ({ taskId, noteId }) => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
-
+      
       // Find and update the note to remove the task block
       const notes = queryClient.getQueryData(['notes']) as any[];
       if (notes) {
         const noteToUpdate = notes.find(note => note.id === noteId);
         if (noteToUpdate) {
-          const updatedContent = noteToUpdate.content.filter((block: any) =>
+          const updatedContent = noteToUpdate.content.filter((block: any) => 
             !(block.type === 'task' && block.properties?.taskId === taskId)
           );
-
+          
           // Only update if content actually changed
           if (updatedContent.length !== noteToUpdate.content.length) {
             // Update the note in the database
             getDb().then(db => {
               if (db) {
-                db.notes.update(noteId, {
-                  content: updatedContent,
-                  updatedAt: new Date()
+                db.notes.update(noteId, { 
+                  content: updatedContent, 
+                  updatedAt: new Date() 
                 });
               }
             });
-
+            
             // Update the query cache
-            queryClient.setQueryData(['notes'], (oldNotes: any[]) =>
-              oldNotes.map(note =>
-                note.id === noteId
+            queryClient.setQueryData(['notes'], (oldNotes: any[]) => 
+              oldNotes.map(note => 
+                note.id === noteId 
                   ? { ...note, content: updatedContent, updatedAt: new Date() }
                   : note
               )
@@ -125,7 +125,7 @@ export function useTasks() {
           }
         }
       }
-
+      
       toast.success('Task deleted successfully');
     },
     onError: () => {
@@ -137,9 +137,9 @@ export function useTasks() {
     mutationFn: async (updates: Array<{ id: string; updates: Partial<Task> }>) => {
       const db = await getDb();
       if (!db) throw new Error('Database not available');
-
+      
       await Promise.all(
-        updates.map(({ id, updates }) =>
+        updates.map(({ id, updates }) => 
           db.tasks.update(id, { ...updates, updatedAt: new Date() })
         )
       );
@@ -157,9 +157,9 @@ export function useTasks() {
     mutationFn: async (tasks: Task[]) => {
       const db = await getDb();
       if (!db) throw new Error('Database not available');
-
+      
       await Promise.all(
-        tasks.map((task, index) =>
+        tasks.map((task, index) => 
           db.tasks.update(task.id, { order: index + 1, updatedAt: new Date() })
         )
       );
@@ -186,7 +186,7 @@ export function useTasks() {
   const sortTasks = (tasks: Task[], sortBy: TaskSortBy, ascending = true) => {
     const sorted = [...tasks].sort((a, b) => {
       let comparison = 0;
-
+      
       switch (sortBy) {
         case 'dueDate':
           if (!a.dueDate && !b.dueDate) comparison = 0;
@@ -210,10 +210,10 @@ export function useTasks() {
         default:
           comparison = a.order - b.order;
       }
-
+      
       return ascending ? comparison : -comparison;
     });
-
+    
     return sorted;
   };
 

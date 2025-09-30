@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Save, Star, Archive, MoreHorizontal, Share, Download, AlignLeft, AlignRight } from 'lucide-react';
+import { Save, Star, Archive, MoveHorizontal as MoreHorizontal, Share, Download, AlignLeft, AlignRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -37,8 +37,8 @@ export function NoteEditor({ note, onClose }: NoteEditorProps) {
     if (note) {
       setTitle(note.title);
       // Ensure there's always at least one block for editing
-      const noteBlocks = note.content && note.content.length > 0
-        ? note.content
+      const noteBlocks = note.content && note.content.length > 0 
+        ? note.content 
         : [{
             id: crypto.randomUUID(),
             type: 'paragraph' as const,
@@ -139,7 +139,7 @@ export function NoteEditor({ note, onClose }: NoteEditorProps) {
 
   const getNotebookName = () => {
     if (!note) return '';
-    return notebooks.find(nb => nb.id === note.notebookId)?.name || 'Unknown';
+    return notebooks.find((nb: Notebook) => nb.id === note.notebookId)?.name || 'Unknown';
   };
 
   if (!note) {

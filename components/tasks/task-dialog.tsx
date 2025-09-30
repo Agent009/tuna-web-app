@@ -5,18 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { format, addDays, addHours } from 'date-fns';
-import { 
-  CheckSquare, 
-  Calendar, 
-  Clock, 
-  AlertTriangle, 
-  Flag,
-  FileText,
-  CalendarDays,
-  Search,
-  Check,
-  ChevronsUpDown
-} from 'lucide-react';
+import { SquareCheck as CheckSquare, Calendar, Clock, TriangleAlert as AlertTriangle, Flag, FileText, CalendarDays, Search, Check, ChevronsUpDown } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -240,7 +229,7 @@ export function TaskDialog({ open, onOpenChange, task, defaultNoteId }: TaskDial
 
   // Get default note (Things to do) if no notes exist
   const getDefaultNoteId = () => {
-    const thingsToDoNote = notes.find(note => note.title === 'Things to do');
+    const thingsToDoNote = notes.find((note: Note) => note.title === 'Things to do');
     return thingsToDoNote?.id || notes[0]?.id || '';
   };
 

@@ -2,22 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Filter, 
-  Search, 
-  Calendar,
-  Tag,
-  Star,
-  BookOpen,
-  X,
-  Plus,
-  Save,
-  ChevronDown,
-  SortAsc,
-  SortDesc,
-  Clock,
-  CalendarDays
-} from 'lucide-react';
+import { Filter, Search, Calendar, Tag, Star, BookOpen, X, Plus, Save, ChevronDown, Import as SortAsc, Dessert as SortDesc, Clock, CalendarDays } from 'lucide-react';
 import { format, subDays, startOfDay, endOfDay } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -185,11 +170,11 @@ export function NoteFilterBar({ className }: NoteFilterBarProps) {
   };
 
   const getNotebookName = (notebookId: string) => {
-    return notebooks.find(nb => nb.id === notebookId)?.name || 'Unknown';
+    return notebooks.find((nb: Notebook) => nb.id === notebookId)?.name || 'Unknown';
   };
 
   const getNotebookColor = (notebookId: string) => {
-    return notebooks.find(nb => nb.id === notebookId)?.color || '#6B7280';
+    return notebooks.find((nb: Notebook) => nb.id === notebookId)?.color || '#6B7280';
   };
 
   return (

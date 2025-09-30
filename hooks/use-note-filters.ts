@@ -93,13 +93,13 @@ export function useNoteFilters() {
       if (filters.search.trim()) {
         const searchTerm = filters.search.toLowerCase();
         const titleMatch = note.title.toLowerCase().includes(searchTerm);
-        const contentMatch = note.content.some(block =>
+        const contentMatch = note.content.some(block => 
           block.content.toLowerCase().includes(searchTerm)
         );
-        const tagMatch = note.tags.some(tag =>
+        const tagMatch = note.tags.some(tag => 
           tag.toLowerCase().includes(searchTerm)
         );
-
+        
         if (!titleMatch && !contentMatch && !tagMatch) {
           return false;
         }
@@ -236,8 +236,8 @@ export function useNoteFilters() {
   // Get all unique tags from notes
   const availableTags = useMemo(() => {
     const tagSet = new Set<string>();
-    notes.forEach(note => {
-      note.tags.forEach(tag => tagSet.add(tag));
+    notes.forEach((note: Note) => {
+      note.tags.forEach((tag: string) => tagSet.add(tag));
     });
     return Array.from(tagSet).sort();
   }, [notes]);
@@ -268,7 +268,7 @@ export function useNoteFilters() {
     savedFilters,
     availableTags,
     activeFiltersCount,
-
+    
     // Actions
     updateFilter,
     clearFilters,
@@ -277,7 +277,7 @@ export function useNoteFilters() {
     saveCurrentFilter,
     applySavedFilter,
     deleteSavedFilter,
-
+    
     // Computed
     totalFilteredCount: sortedNotes.length,
     hasActiveFilters

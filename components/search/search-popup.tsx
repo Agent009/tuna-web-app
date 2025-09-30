@@ -22,18 +22,18 @@ export function SearchPopup({ query, onSelectNote, onSelectNotebook, onViewAllRe
     if (!query.trim()) return { notebooks: [], notes: [], content: [] };
 
     // Search notebooks
-    const matchingNotebooks = notebooks.filter(notebook =>
+    const matchingNotebooks = notebooks.filter((notebook: Notebook) =>
       notebook.name.toLowerCase().includes(query.toLowerCase()) ||
       notebook.description.toLowerCase().includes(query.toLowerCase())
     ).slice(0, 5);
 
     // Search notes by title
-    const matchingNotesByTitle = notes.filter(note =>
+    const matchingNotesByTitle = notes.filter((note: Note) =>
       note.title.toLowerCase().includes(query.toLowerCase()) && !note.isArchived
     ).slice(0, 5);
 
     // Search notes by content
-    const searchEngine = new SearchEngine(notes.filter(note => !note.isArchived));
+    const searchEngine = new SearchEngine(notes.filter((note: Note) => !note.isArchived));
     const contentResults = searchEngine.search(query).slice(0, 5);
 
     return {
@@ -59,7 +59,7 @@ export function SearchPopup({ query, onSelectNote, onSelectNotebook, onViewAllRe
   };
 
   const getNotebookName = (notebookId: string) => {
-    return notebooks.find(nb => nb.id === notebookId)?.name || 'Unknown';
+    return notebooks.find((nb: Notebook) => nb.id === notebookId)?.name || 'Unknown';
   };
 
   const formatDate = (date: Date) => {
@@ -192,7 +192,7 @@ export function SearchPopup({ query, onSelectNote, onSelectNotebook, onViewAllRe
                       {highlightText(result.content, query)}
                     </p>
                     <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
-                      <span>{getNotebookName(notes.find(n => n.id === result.id)?.notebookId || '')}</span>
+                      <span>{getNotebookName(notes.find((n: Note) => n.id === result.id)?.notebookId || '')}</span>
                       <span>•</span>
                       <span>{formatDate(result.updatedAt)}</span>
                     </div>

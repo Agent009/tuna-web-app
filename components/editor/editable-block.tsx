@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Check, Square } from 'lucide-react';
-import { Block, BlockType, TextFormatting } from '@/lib/types';
+import { Block, BlockType, TextFormatting, Note, Task } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { SlashCommandMenu } from './slash-command-menu';
@@ -111,7 +111,7 @@ export function EditableBlock({
   useEffect(() => {
     if (isFocused && contentRef.current) {
       contentRef.current.focus();
-
+      
       // Update formatting based on cursor position
       setTimeout(() => {
         if (contentRef.current) {
@@ -143,10 +143,10 @@ export function EditableBlock({
   useEffect(() => {
     if (block.type === 'task' && !taskId && block.content.trim()) {
       // Find the note this block belongs to
-      const currentNote = notes.find((note: Note) =>
+      const currentNote = notes.find((note: Note) => 
         note.content.some((b: Block) => b.id === block.id)
       );
-
+      
       if (currentNote) {
         // Create a task in the task system
         createTaskAsync({
@@ -160,9 +160,9 @@ export function EditableBlock({
         }).then((createdTask) => {
           // Update the block to include the taskId
           onChange({
-            properties: {
-              ...taskProps,
-              taskId: createdTask.id
+            properties: { 
+              ...taskProps, 
+              taskId: createdTask.id 
             }
           });
         }).catch((error) => {
@@ -175,13 +175,13 @@ export function EditableBlock({
   const handleInput = (e: React.FormEvent<HTMLDivElement>) => {
     // Get the current content
     const content = e.currentTarget.textContent || '';
-
+    
     // Check for slash command
     if (content.endsWith('/')) {
       const rect = e.currentTarget.getBoundingClientRect();
       const selection = window.getSelection();
       const range = selection?.getRangeAt(0);
-
+      
       if (range) {
         const rects = range.getClientRects();
         if (rects.length > 0) {
@@ -225,29 +225,29 @@ export function EditableBlock({
 
   const handleSlashSelect = (command: string) => {
     setShowSlashMenu(false);
-
+    
     // Store current cursor position
     const selection = window.getSelection();
     const range = selection?.getRangeAt(0);
     const cursorPosition = range?.startOffset || 0;
-
+    
     // Remove the slash from content
     const currentContent = contentRef.current?.textContent || '';
     const contentWithoutSlash = currentContent.slice(0, -1); // Remove last character (slash)
-
+    
     // Update content without slash
     onChange({ content: contentWithoutSlash });
     onSlashCommand(command);
-
+    
     // Restore focus and cursor position after command selection
     setTimeout(() => {
       if (contentRef.current) {
         contentRef.current.focus();
-
+        
         // Set cursor position at the end of content (where slash was)
         const range = document.createRange();
         const selection = window.getSelection();
-
+        
         if (contentRef.current.firstChild) {
           const textNode = contentRef.current.firstChild;
           const newPosition = Math.min(cursorPosition - 1, textNode.textContent?.length || 0);
@@ -257,7 +257,7 @@ export function EditableBlock({
           range.selectNodeContents(contentRef.current);
           range.collapse(false);
         }
-
+        
         selection?.removeAllRanges();
         selection?.addRange(range);
       }
@@ -327,8 +327,8 @@ export function EditableBlock({
             onMouseUp={handleSelectionChange}
             onKeyUp={handleSelectionChange}
             data-placeholder={getPlaceholder()}
-            style={{
-              direction: textDirection,
+            style={{ 
+              direction: textDirection, 
               textAlign: textDirection === 'ltr' ? 'left' : 'right',
             }}
           >
@@ -340,8 +340,8 @@ export function EditableBlock({
 
     if (block.type === 'task') {
       // Find the actual task from the database
-      const actualTask = taskId ? tasks.find(t => t.id === taskId) : null;
-
+      const actualTask = taskId ? tasks.find((t: Task) => t.id === taskId) : null;
+      
       // Use actual task data if available, otherwise fall back to block properties
       const displayCompleted = actualTask ? actualTask.completed : isCompleted;
       const displayPriority = actualTask ? actualTask.priority : priority;
@@ -354,15 +354,16 @@ export function EditableBlock({
           <Checkbox
             checked={displayCompleted}
             onCheckedChange={(checked) => {
+              const isCompleted = checked === true;
               // Update both the task and the block
               if (actualTask) {
                 updateTask({
                   id: actualTask.id,
-                  updates: { completed: checked }
+                  updates: { completed: isCompleted }
                 });
               }
               // Update block properties for immediate UI feedback
-              const updatedProperties = { ...taskProps, completed: checked };
+              const updatedProperties = { ...taskProps, completed: isCompleted };
               onChange({
                 properties: updatedProperties
               });
@@ -384,7 +385,7 @@ export function EditableBlock({
                 onKeyDown(e);
               }}
               data-placeholder="Task title"
-              style={{
+              style={{ 
                 direction: textDirection,
                 textAlign: textDirection === 'ltr' ? 'left' : 'right'
               }}
@@ -442,8 +443,8 @@ export function EditableBlock({
             onMouseUp={handleSelectionChange}
             onKeyUp={handleSelectionChange}
             data-placeholder={getPlaceholder()}
-            style={{
-              direction: textDirection,
+            style={{ 
+              direction: textDirection, 
               textAlign: textDirection === 'ltr' ? 'left' : 'right',
             }}
           >
@@ -472,8 +473,8 @@ export function EditableBlock({
             onMouseUp={handleSelectionChange}
             onKeyUp={handleSelectionChange}
             data-placeholder={getPlaceholder()}
-            style={{
-              direction: textDirection,
+            style={{ 
+              direction: textDirection, 
               textAlign: textDirection === 'ltr' ? 'left' : 'right',
             }}
           >
@@ -499,8 +500,8 @@ export function EditableBlock({
         onMouseUp={handleSelectionChange}
         onKeyUp={handleSelectionChange}
         data-placeholder={getPlaceholder()}
-        style={{
-          direction: textDirection,
+        style={{ 
+          direction: textDirection, 
           textAlign: textDirection === 'ltr' ? 'left' : 'right',
         }}
       >
@@ -512,17 +513,17 @@ export function EditableBlock({
   const handleKeyDown = (e: React.KeyboardEvent) => {
     // Handle rich text keyboard shortcuts first
     handleRichTextKeyDown(e.nativeEvent, contentRef.current || undefined);
-
+    
     // Store cursor position after key press
     setTimeout(() => {
       const selection = window.getSelection();
       if (!selection || selection.rangeCount === 0) return;
-
+      
       const range = selection.getRangeAt(0);
       if (range && contentRef.current) {
         // Find the text node
         let textNode: Node | null = null;
-
+        
         if (range.startContainer.nodeType === Node.TEXT_NODE) {
           textNode = range.startContainer;
         } else {
@@ -530,12 +531,11 @@ export function EditableBlock({
           const walker = document.createTreeWalker(
             contentRef.current,
             NodeFilter.SHOW_TEXT,
-            null,
-            false
+            null
           );
           textNode = walker.nextNode();
         }
-
+        
         if (textNode) {
           lastCursorPositionRef.current = range.startOffset;
         }
@@ -548,17 +548,17 @@ export function EditableBlock({
       const textNode = contentRef.current.firstChild;
       if (textNode && textNode.nodeType === Node.TEXT_NODE) {
         const textLength = textNode.textContent?.length || 0;
-
+        
         // Ensure cursor position is valid
         const position = Math.min(lastCursorPositionRef.current, textLength);
-
+        
         // Set cursor position
         const selection = window.getSelection();
         const range = document.createRange();
-
+        
         range.setStart(textNode, position);
         range.setEnd(textNode, position);
-
+        
         selection?.removeAllRanges();
         selection?.addRange(range);
       }

@@ -3,15 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
-import { 
-  Calendar, 
-  Flag, 
-  MoreHorizontal, 
-  Clock, 
-  AlertTriangle,
-  Edit,
-  Trash2
-} from 'lucide-react';
+import { Calendar, Flag, MoveHorizontal as MoreHorizontal, Clock, TriangleAlert as AlertTriangle, CreditCard as Edit, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
@@ -64,7 +56,7 @@ export function TaskItem({ task, onEdit, onOpenNote, isDragging }: TaskItemProps
   };
 
   const getNoteName = () => {
-    const note = notes.find(n => n.id === task.noteId);
+    const note = notes.find((n: Note) => n.id === task.noteId);
     return note?.title || 'Unknown Note';
   };
 

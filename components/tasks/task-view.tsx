@@ -24,7 +24,7 @@ export function TaskView() {
 
   const handleOpenNote = (noteId: string) => {
     // Find the note and trigger the parent component to open it
-    const note = notes.find(n => n.id === noteId);
+    const note = notes.find((n: Note) => n.id === noteId);
     if (note) {
       // Communicate to parent component to open the note and switch views
       window.dispatchEvent(new CustomEvent('openNote', { detail: { note } }));
@@ -38,7 +38,7 @@ export function TaskView() {
 
   // Get default note ID (Things to do)
   const getDefaultNoteId = () => {
-    const thingsToDoNote = notes.find(note => note.title === 'Things to do');
+    const thingsToDoNote = notes.find((note: Note) => note.title === 'Things to do');
     return thingsToDoNote?.id || notes[0]?.id || '';
   };
 

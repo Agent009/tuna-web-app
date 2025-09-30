@@ -2,19 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Search, 
-  BookOpen, 
-  FileText, 
-  Filter, 
-  SortAsc, 
-  SortDesc,
-  Calendar,
-  Star,
-  X,
-  ChevronLeft,
-  ChevronRight
-} from 'lucide-react';
+import { Search, BookOpen, FileText, Filter, Import as SortAsc, Dessert as SortDesc, Calendar, Star, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -68,18 +56,18 @@ export function SearchResults({ query, onSelectNote, onClose }: SearchResultsPro
 
     // Combine and deduplicate results
     const allNoteResults = [
-      ...matchingNotesByTitle.map(note => ({ ...note, matchType: 'title' as const })),
+      ...matchingNotesByTitle.map((note: Note) => ({ ...note, matchType: 'title' as const })),
       ...contentResults.map(result => {
-        const note = notes.find(n => n.id === result.id);
+        const note = notes.find((n: Note) => n.id === result.id);
         return note ? { ...note, matchType: 'content' as const, highlights: result.highlights } : null;
       }).filter(Boolean) as Array<Note & { matchType: 'content'; highlights: string[] }>
     ];
 
     // Remove duplicates (prefer title matches over content matches)
     const uniqueNotes = allNoteResults.reduce((acc, current) => {
-      const existing = acc.find(item => item.id === current.id);
+      const existing = acc.find((item: any) => item.id === current.id);
       if (!existing || (existing.matchType === 'content' && current.matchType === 'title')) {
-        return [...acc.filter(item => item.id !== current.id), current];
+        return [...acc.filter((item: any) => item.id !== current.id), current];
       }
       return acc;
     }, [] as typeof allNoteResults);

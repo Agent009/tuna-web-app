@@ -4,17 +4,7 @@ import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { 
-  Plus, 
-  Filter, 
-  SortAsc, 
-  SortDesc,
-  CheckSquare,
-  Square,
-  Flag,
-  Calendar,
-  AlertTriangle
-} from 'lucide-react';
+import { Plus, Filter, Import as SortAsc, Dessert as SortDesc, SquareCheck as CheckSquare, Square, Flag, Calendar, TriangleAlert as AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
@@ -88,7 +78,7 @@ export function TaskList({ onCreateTask, onEditTask, onOpenNote }: TaskListProps
 
   const getFilteredNoteName = () => {
     if (!filters.noteId) return null;
-    const note = notes.find(n => n.id === filters.noteId);
+    const note = notes.find((n: Note) => n.id === filters.noteId);
     return note?.title || 'Unknown Note';
   };
 

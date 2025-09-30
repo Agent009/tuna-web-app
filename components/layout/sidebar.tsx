@@ -2,22 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  BookOpen, 
-  Plus, 
-  Star, 
-  Archive, 
-  CheckSquare,
-  Settings,
-  Moon,
-  Sun,
-  Menu,
-  X,
-  ChevronDown,
-  ChevronRight,
-  FileText,
-  MoreHorizontal
-} from 'lucide-react';
+import { BookOpen, Plus, Star, Archive, SquareCheck as CheckSquare, Settings, Moon, Sun, Menu, X, ChevronDown, ChevronRight, FileText, MoveHorizontal as MoreHorizontal } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -78,11 +63,11 @@ export function Sidebar({
 
   // Auto-expand notebooks that have notes on initial load
   useEffect(() => {
-    const notebooksWithNotes = notebooks.filter(nb => 
-      notes.some(note => note.notebookId === nb.id && !note.isArchived)
+    const notebooksWithNotes = notebooks.filter((nb: Notebook) => 
+      notes.some((note: Note) => note.notebookId === nb.id && !note.isArchived)
     );
     if (notebooksWithNotes.length > 0) {
-      setExpandedNotebooks(new Set(notebooksWithNotes.map(nb => nb.id)));
+      setExpandedNotebooks(new Set(notebooksWithNotes.map((nb: Notebook) => nb.id)));
     }
   }, [notebooks, notes]);
 
@@ -108,7 +93,7 @@ export function Sidebar({
       }, 100);
     }
     setExpandedNotebooks(newExpanded);
-
+    
     // Select the notebook when expanding to update the note list
     if (newExpanded.has(notebookId)) {
       onSelectNotebook(notebookId);
@@ -116,18 +101,13 @@ export function Sidebar({
   };
 
   const handleCreateNoteInNotebook = async (notebookId: string) => {
-    if (typeof notebookId === 'object') {
-      // Handle case where notebook object is passed instead of ID
-      notebookId = notebookId.id;
-    }
-
     setCreatingNote(notebookId);
     try {
       const newNoteData = {
         title: '',
         content: [{
           id: crypto.randomUUID(),
-          type: 'paragraph',
+          type: 'paragraph' as const,
           content: '',
           properties: {},
           children: []
@@ -141,7 +121,7 @@ export function Sidebar({
       const newNote = await createNoteAsync(newNoteData);
       onSelectNote(newNote);
       onSelectNotebook(notebookId);
-
+      
       // Focus the editor after note creation
       setTimeout(() => {
         const firstBlock = document.querySelector('[data-block-id] [contenteditable]') as HTMLElement;
@@ -184,13 +164,13 @@ export function Sidebar({
       };
 
       const newNote = await createNoteAsync(newNoteData);
-
+      
       // Clear input and navigate to new note
       setNewNoteInputs(prev => ({ ...prev, [notebookId]: '' }));
       setFocusedInput(null);
       onSelectNote(newNote);
       onSelectNotebook(notebookId);
-
+      
       // Focus the editor after note creation
       setTimeout(() => {
         const firstBlock = document.querySelector('[data-block-id] [contenteditable]') as HTMLElement;
@@ -235,7 +215,7 @@ export function Sidebar({
   const formatDate = (date: Date) => {
     const now = new Date();
     const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
-
+    
     if (diffInHours < 24) {
       return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     } else if (diffInHours < 24 * 7) {
