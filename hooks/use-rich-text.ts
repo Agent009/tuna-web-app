@@ -145,19 +145,19 @@ export function useRichText({ initialFormatting = {}, onFormatChange }: UseRichT
       switch (e.key.toLowerCase()) {
         case 'b':
           e.preventDefault();
-          if (selection && element && selection.start !== selection.end) {
+          if (selection && element && selection.text.length > 0) {
             applyFormatting(element, { bold: !currentFormatting.bold });
           }
           break;
         case 'i':
           e.preventDefault();
-          if (selection && element && selection.start !== selection.end) {
+          if (selection && element && selection.text.length > 0) {
             applyFormatting(element, { italic: !currentFormatting.italic });
           }
           break;
         case 'u':
           e.preventDefault();
-          if (selection && element && selection.start !== selection.end) {
+          if (selection && element && selection.text.length > 0) {
             applyFormatting(element, { underline: !currentFormatting.underline });
           }
           break;
@@ -177,7 +177,7 @@ export function useRichText({ initialFormatting = {}, onFormatChange }: UseRichT
     }
   }, [selection, currentFormatting, applyFormatting, undo, redo]);
 
-  const getFormattingAtCursor = useCallback((element: HTMLElement): TextFormatting => {
+  const getFormattingAtCursor = useCallback((element: HTMLElement) => {
     const windowSelection = window.getSelection();
     if (!windowSelection || windowSelection.rangeCount === 0) return {};
 
@@ -192,7 +192,7 @@ export function useRichText({ initialFormatting = {}, onFormatChange }: UseRichT
     const elementNode = node as HTMLElement;
     const computedStyle = window.getComputedStyle(elementNode);
 
-    return {
+    const formatting: TextFormatting = {
       bold: computedStyle.fontWeight === 'bold' || parseInt(computedStyle.fontWeight) >= 600,
       italic: computedStyle.fontStyle === 'italic',
       underline: computedStyle.textDecoration.includes('underline'),
@@ -201,8 +201,10 @@ export function useRichText({ initialFormatting = {}, onFormatChange }: UseRichT
       backgroundColor: computedStyle.backgroundColor,
       fontSize: computedStyle.fontSize,
       fontFamily: computedStyle.fontFamily,
-      align: computedStyle.textAlign as any,
+      align: computedStyle.textAlign as 'left' | 'center' | 'right' | 'justify',
     };
+
+    return formatting;
   }, []);
 
   return {

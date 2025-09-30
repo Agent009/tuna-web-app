@@ -47,7 +47,7 @@ export function EditableBlock({
   const richTextEnabled = block.type !== 'task' && block.type !== 'todo' && block.type !== 'divider';
   const richTextHook = useRichText({
     initialFormatting: block.properties?.formatting || {},
-    onFormatChange: (formatting) => {
+    onFormatChange: (formatting: TextFormatting) => {
       onChange({
         properties: {
           ...block.properties,
@@ -70,7 +70,7 @@ export function EditableBlock({
     canUndo,
     canRedo,
     setCurrentFormatting,
-  } = richTextEnabled ? richTextHook : {
+  } = (richTextEnabled ? richTextHook : {
     selection: null,
     currentFormatting: {},
     updateSelection: () => {},
@@ -83,7 +83,7 @@ export function EditableBlock({
     canUndo: false,
     canRedo: false,
     setCurrentFormatting: () => {},
-  };
+  }) as typeof richTextHook;
 
   // Extract task properties at component level to avoid conditional hook calls
   const taskProps = block.properties || {};
@@ -143,8 +143,8 @@ export function EditableBlock({
   useEffect(() => {
     if (block.type === 'task' && !taskId && block.content.trim()) {
       // Find the note this block belongs to
-      const currentNote = notes.find(note =>
-        note.content.some(b => b.id === block.id)
+      const currentNote = notes.find((note: Note) =>
+        note.content.some((b: Block) => b.id === block.id)
       );
 
       if (currentNote) {
@@ -153,7 +153,7 @@ export function EditableBlock({
           title: block.content,
           description: description,
           completed: isCompleted,
-          dueDate: dueDate,
+          dueDate: dueDate || undefined,
           priority: priority,
           flagged: flagged,
           noteId: currentNote.id

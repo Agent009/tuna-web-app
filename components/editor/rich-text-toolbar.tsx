@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Bold,
@@ -74,7 +74,7 @@ export function RichTextToolbar({
   canRedo,
   className = ''
 }: RichTextToolbarProps) {
-  const isVisible = !!selection && selection.start !== selection.end;
+  const isVisible = !!selection && selection.text.length > 0;
 
   const handleFormatToggle = (property: keyof TextFormatting) => {
     onFormat({ [property]: !currentFormatting[property] });
