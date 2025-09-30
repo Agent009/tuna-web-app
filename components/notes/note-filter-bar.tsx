@@ -473,7 +473,7 @@ export function NoteFilterBar({ className }: NoteFilterBarProps) {
               
               {filters.search && (
                 <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20">
-                  Search: "{filters.search}"
+                  Search: &quot;{filters.search}&quot;
                   <Button
                     variant="ghost"
                     size="sm"

@@ -86,7 +86,7 @@ export function SearchPopup({ query, onSelectNote, onSelectNotebook, onViewAllRe
       >
         <div className="text-center text-muted-foreground">
           <Search className="h-8 w-8 mx-auto mb-2 opacity-50" />
-          <p className="text-sm">No results found for "{query}"</p>
+          <p className="text-sm">No results found for &quot;{query}&quot;</p>
         </div>
       </motion.div>
     );
@@ -142,7 +142,7 @@ export function SearchPopup({ query, onSelectNote, onSelectNotebook, onViewAllRe
               <span className="text-sm font-medium text-muted-foreground">Note Titles</span>
             </div>
             <div className="space-y-1">
-              {searchResults.notes.map((note: any) => (
+              {searchResults.notes.map((note: Note) => (
                 <motion.button
                   key={note.id}
                   whileHover={{ x: 2 }}
@@ -213,7 +213,7 @@ export function SearchPopup({ query, onSelectNote, onSelectNotebook, onViewAllRe
           className="w-full justify-between tuna-interactive"
           onClick={onViewAllResults}
         >
-          <span className="text-sm">View all results for "{query}"</span>
+          <span className="text-sm">View all results for &quot;{query}&quot;</span>
           <ArrowRight className="h-4 w-4" />
         </Button>
       </div>

@@ -40,9 +40,10 @@ export class SearchEngine {
       .filter(result => this.applyFilters(result, filters));
   }
 
-  private extractHighlights(matches: any[]): string[] {
+  private extractHighlights(matches: Array<{ value?: string }>): string[] {
     return [...(matches || [] as any[])]
-      .map(match => match.value)
+      .map(match => match.value || '')
+      .filter(value => value.length > 0)
       .slice(0, 3);
   }
 

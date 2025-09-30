@@ -42,7 +42,7 @@ export function DeleteNotebookDialog({ open, onOpenChange, notebook }: DeleteNot
           </AlertDialogTitle>
           <AlertDialogDescription className="space-y-2">
             <p>
-              Are you sure you want to delete "{notebook?.name}"? This action cannot be undone.
+              Are you sure you want to delete &quot;{notebook?.name}&quot;? This action cannot be undone.
             </p>
             {notesInNotebook > 0 && (
               <p className="font-medium text-destructive">

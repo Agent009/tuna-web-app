@@ -88,7 +88,7 @@ export function SearchResults({ query, onSelectNote, onClose }: SearchResultsPro
     }
 
     if (filterBy === 'all' || filterBy === 'notes' || filterBy === 'content') {
-      results.push(...searchResults.notes.map(note => ({ 
+      results.push(...searchResults.notes.map((note: any) => ({
         type: 'note' as const, 
         item: note, 
         matchType: note.matchType,
@@ -151,7 +151,7 @@ export function SearchResults({ query, onSelectNote, onClose }: SearchResultsPro
   };
 
   const getNotebookName = (notebookId: string) => {
-    return notebooks.find(nb => nb.id === notebookId)?.name || 'Unknown';
+    return notebooks.find((nb: any) => nb.id === notebookId)?.name || 'Unknown';
   };
 
   const formatDate = (date: Date) => {
@@ -191,7 +191,7 @@ export function SearchResults({ query, onSelectNote, onClose }: SearchResultsPro
 
         <div className="space-y-3">
           <div className="text-sm text-muted-foreground">
-            {filteredResults.length} results for "{query}"
+            {filteredResults.length} results for &quot;{query}&quot;
           </div>
 
           {/* Filters and Sort */}
@@ -335,7 +335,7 @@ export function SearchResults({ query, onSelectNote, onClose }: SearchResultsPro
                           </div>
                           {result.item.tags.length > 0 && (
                             <div className="flex items-center gap-1 mt-2">
-                              {result.item.tags.slice(0, 3).map(tag => (
+                              {result.item.tags.slice(0, 3).map((tag: any) => (
                                 <Badge key={tag} variant="outline" className="text-xs">
                                   {tag}
                                 </Badge>

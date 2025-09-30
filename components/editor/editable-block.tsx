@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -86,13 +86,13 @@ export function EditableBlock({
   }) as typeof richTextHook;
 
   // Extract task properties at component level to avoid conditional hook calls
-  const taskProps = block.properties || {};
-  const isCompleted = taskProps.completed || false;
-  const priority = taskProps.priority || 'medium';
-  const dueDate = taskProps.dueDate ? new Date(taskProps.dueDate) : null;
-  const flagged = taskProps.flagged || false;
-  const description = taskProps.description || '';
-  const taskId = taskProps.taskId;
+  const taskProps = useMemo(() => block.properties || {}, [block.properties]);
+  const isCompleted = useMemo(() => taskProps.completed || false, [taskProps.completed]);
+  const priority = useMemo(() => taskProps.priority || 'medium', [taskProps.priority]);
+  const dueDate = useMemo(() => taskProps.dueDate ? new Date(taskProps.dueDate) : null, [taskProps.dueDate]);
+  const flagged = useMemo(() => taskProps.flagged || false, [taskProps.flagged]);
+  const description = useMemo(() => taskProps.description || '', [taskProps.description]);
+  const taskId = useMemo(() => taskProps.taskId, [taskProps.taskId]);
 
   const {
     attributes,
@@ -120,7 +120,7 @@ export function EditableBlock({
         }
       }, 0);
     }
-  }, [isFocused]);
+  }, [isFocused, getFormattingAtCursor, setCurrentFormatting]);
 
   // Make sure textDirection is consistently applied
   useEffect(() => {

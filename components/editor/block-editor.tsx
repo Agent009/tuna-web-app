@@ -56,7 +56,7 @@ export function BlockEditor({ blocks, onChange, textDirection = 'ltr', className
       
       setBlocks(blocksToSet);
     }
-  }, [blocks]); // Only depend on blocks prop, not internal state
+  }, [blocks, editorBlocks, setBlocks]);
 
   // Handle global selection changes for rich text formatting
   const handleGlobalSelectionChange = useCallback(() => {

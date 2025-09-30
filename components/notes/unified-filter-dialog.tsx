@@ -222,8 +222,8 @@ export function UnifiedFilterDialog({ open, onOpenChange, selectedFilter }: Unif
                       variant={filters.tags.includes(tag) ? "default" : "outline"}
                       size="sm"
                       onClick={() => handleTagToggle(tag)}
-                      className={filters.tags.includes(tag)
-                        ? "bg-accent text-accent-foreground"
+                      className={filters.tags.includes(tag) 
+                        ? "bg-accent text-accent-foreground" 
                         : "border-border text-foreground hover:bg-accent hover:text-accent-foreground"
                       }
                     >
@@ -258,8 +258,8 @@ export function UnifiedFilterDialog({ open, onOpenChange, selectedFilter }: Unif
                         variant={filters.notebooks.includes(notebook.id) ? "default" : "outline"}
                         size="sm"
                         onClick={() => handleNotebookToggle(notebook.id)}
-                        className={filters.notebooks.includes(notebook.id)
-                          ? "bg-accent text-accent-foreground"
+                        className={filters.notebooks.includes(notebook.id) 
+                          ? "bg-accent text-accent-foreground" 
                           : "border-border text-foreground hover:bg-accent hover:text-accent-foreground"
                         }
                       >

@@ -35,7 +35,7 @@ export default function Home() {
     return () => {
       window.removeEventListener('openNote', handleOpenNote as EventListener);
     };
-  }, []);
+  }, [selectedFilter]);
 
   // Set default notebook on first load
   useEffect(() => {
