@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useNotes } from '@/hooks/use-notes';
-import { Note } from '@/lib/types';
+import { Note, Notebook } from '@/lib/types';
 import { NoteCard } from './note-card';
 import { UnifiedFilterButton } from './unified-filter-button';
 import { useNoteFilters } from '@/hooks/use-note-filters';

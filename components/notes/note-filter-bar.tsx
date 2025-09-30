@@ -117,6 +117,7 @@ export function NoteFilterBar({ className }: NoteFilterBarProps) {
   };
 
   const handleCustomDateRange = (range: { from?: Date; to?: Date }) => {
+    if (!range) return;
     updateFilter('dateRange', {
       start: range.from || null,
       end: range.to || null
@@ -124,6 +125,7 @@ export function NoteFilterBar({ className }: NoteFilterBarProps) {
   };
 
   const handleCreatedDateRange = (range: { from?: Date; to?: Date }) => {
+    if (!range) return;
     updateFilter('createdDateRange', {
       start: range.from || null,
       end: range.to || null

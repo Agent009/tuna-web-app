@@ -21,11 +21,11 @@ import { CreateNotebookDialog } from './create-notebook-dialog';
 import { EditNotebookDialog } from './edit-notebook-dialog';
 import { DeleteNotebookDialog } from './delete-notebook-dialog';
 import { SearchBar } from '../search/search-bar';
-import { Note, Notebook } from '@/lib/types';
+import { Note, Notebook, Block } from '@/lib/types';
 
 interface SidebarProps {
   onSelectNotebook: (notebookId: string) => void;
-  onSelectFilter: (filter: 'all' | 'favorites' | 'archived') => void;
+  onSelectFilter: (filter: 'all' | 'favorites' | 'archived' | 'tasks') => void;
   onSearch: (query: string) => void;
   onSelectNote: (note: Note) => void;
   selectedNotebook: string | null;
@@ -152,7 +152,7 @@ export function Sidebar({
         title,
         content: [{
           id: crypto.randomUUID(),
-          type: 'paragraph',
+          type: 'paragraph' as const,
           content: '',
           properties: {},
           children: []
