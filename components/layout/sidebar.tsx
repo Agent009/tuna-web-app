@@ -205,7 +205,7 @@ export function Sidebar({
   };
 
   const getNotesForNotebook = (notebookId: string) => {
-    return notes.filter(note => note.notebookId === notebookId && !note.isArchived);
+    return notes.filter((note: Note) => note.notebookId === notebookId && !note.isArchived);
   };
 
   const formatNoteTitle = (note: Note) => {
@@ -260,7 +260,10 @@ export function Sidebar({
             {!isCollapsed && (
               <SearchBar
                 onSearch={onSearch}
-                onSelectNote={onSelectNote}
+                onSelectNote={(noteId: string) => {
+                  const note = notes.find((n: Note) => n.id === noteId);
+                  if (note) onSelectNote(note);
+                }}
                 onSelectNotebook={onSelectNotebook}
                 className="mb-4"
               />
@@ -317,7 +320,7 @@ export function Sidebar({
             </div>
 
             <div className="space-y-1 pb-4">
-              {notebooks.map((notebook) => {
+              {notebooks.map((notebook: Notebook) => {
                 const notebookNotes = getNotesForNotebook(notebook.id);
                 const isExpanded = expandedNotebooks.has(notebook.id);
                 
@@ -349,7 +352,7 @@ export function Sidebar({
                               onEdit={handleEditNotebook}
                               onDelete={handleDeleteNotebook}
                               noteCount={notebookNotes.length}
-                              onCreateNote={handleCreateNoteInNotebook}
+                              onCreateNote={(notebook: Notebook) => handleCreateNoteInNotebook(notebook.id)}
                             />
                           </div>
                         </div>
@@ -363,7 +366,7 @@ export function Sidebar({
                         exit={{ opacity: 0, height: 0 }}
                         className="ml-6 space-y-1"
                       >
-                        {notebookNotes.slice(0, 10).map((note) => (
+                        {notebookNotes.slice(0, 10).map((note: Note) => (
                           <motion.div
                             key={note.id}
                             whileHover={{ x: 2 }}

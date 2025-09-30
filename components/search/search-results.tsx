@@ -40,18 +40,18 @@ export function SearchResults({ query, onSelectNote, onClose }: SearchResultsPro
     if (!query.trim()) return { notebooks: [], notes: [], content: [], total: 0 };
 
     // Search notebooks
-    const matchingNotebooks = notebooks.filter(notebook =>
+    const matchingNotebooks = notebooks.filter((notebook: any) =>
       notebook.name.toLowerCase().includes(query.toLowerCase()) ||
       notebook.description.toLowerCase().includes(query.toLowerCase())
     );
 
     // Search notes by title
-    const matchingNotesByTitle = notes.filter(note =>
+    const matchingNotesByTitle = notes.filter((note: any) =>
       note.title.toLowerCase().includes(query.toLowerCase()) && !note.isArchived
     );
 
     // Search notes by content
-    const searchEngine = new SearchEngine(notes.filter(note => !note.isArchived));
+    const searchEngine = new SearchEngine(notes.filter((note: any) => !note.isArchived));
     const contentResults = searchEngine.search(query);
 
     // Combine and deduplicate results
@@ -84,7 +84,7 @@ export function SearchResults({ query, onSelectNote, onClose }: SearchResultsPro
     let results: Array<{ type: 'notebook' | 'note'; item: any; matchType?: string; highlights?: string[] }> = [];
 
     if (filterBy === 'all' || filterBy === 'notebooks') {
-      results.push(...searchResults.notebooks.map(nb => ({ type: 'notebook' as const, item: nb })));
+      results.push(...searchResults.notebooks.map((nb: any) => ({ type: 'notebook' as const, item: nb })));
     }
 
     if (filterBy === 'all' || filterBy === 'notes' || filterBy === 'content') {

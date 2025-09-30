@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useState, useMemo, useCallback } from 'react';
-import { Note, NoteFilters, NoteSortBy, SavedFilter } from '@/lib/types';
+import { Note, NoteFilters, NoteSortBy, SavedFilter, Block } from '@/lib/types';
 import { useNotes } from './use-notes';
 
 const DEFAULT_FILTERS: NoteFilters = {

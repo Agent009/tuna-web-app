@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useNotes } from '@/hooks/use-notes';
 import { SearchEngine } from '@/lib/search';
+import { Note, Notebook } from '@/lib/types';
 
 interface SearchPopupProps {
   query: string;
@@ -106,7 +107,7 @@ export function SearchPopup({ query, onSelectNote, onSelectNotebook, onViewAllRe
             <span className="text-sm font-medium text-muted-foreground">Notebooks</span>
           </div>
           <div className="space-y-1">
-            {searchResults.notebooks.map((notebook) => (
+            {searchResults.notebooks.map((notebook: any) => (
               <motion.button
                 key={notebook.id}
                 whileHover={{ x: 2 }}
@@ -141,7 +142,7 @@ export function SearchPopup({ query, onSelectNote, onSelectNotebook, onViewAllRe
               <span className="text-sm font-medium text-muted-foreground">Note Titles</span>
             </div>
             <div className="space-y-1">
-              {searchResults.notes.map((note) => (
+              {searchResults.notes.map((note: any) => (
                 <motion.button
                   key={note.id}
                   whileHover={{ x: 2 }}

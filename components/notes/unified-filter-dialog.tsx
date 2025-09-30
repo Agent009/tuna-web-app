@@ -26,7 +26,7 @@ import {
 } from '@/components/ui/popover';
 import { useNoteFilters } from '@/hooks/use-note-filters';
 import { useNotes } from '@/hooks/use-notes';
-import { NoteFilters, NoteSortBy } from '@/lib/types';
+import { NoteFilters, NoteSortBy, Notebook } from '@/lib/types';
 
 interface UnifiedFilterDialogProps {
   open: boolean;
@@ -115,7 +115,10 @@ export function UnifiedFilterDialog({ open, onOpenChange, selectedFilter }: Unif
   };
 
   const handleCustomDateRange = (range: { from?: Date; to?: Date }) => {
-    if (!range) return;
+    if (!range) {
+      updateFilter('dateRange', { start: null, end: null });
+      return;
+    }
     updateFilter('dateRange', {
       start: range.from || null,
       end: range.to || null
@@ -123,7 +126,10 @@ export function UnifiedFilterDialog({ open, onOpenChange, selectedFilter }: Unif
   };
 
   const handleCreatedDateRange = (range: { from?: Date; to?: Date }) => {
-    if (!range) return;
+    if (!range) {
+      updateFilter('createdDateRange', { start: null, end: null });
+      return;
+    }
     updateFilter('createdDateRange', {
       start: range.from || null,
       end: range.to || null

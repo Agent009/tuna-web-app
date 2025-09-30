@@ -35,7 +35,7 @@ import {
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { useTasks } from '@/hooks/use-tasks';
 import { useNotes } from '@/hooks/use-notes';
-import { Task } from '@/lib/types';
+import { Task, Note } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
 const taskSchema = z.object({
@@ -104,12 +104,12 @@ export function TaskDialog({ open, onOpenChange, task, defaultNoteId }: TaskDial
   }, [task, defaultNoteId, form]);
 
   // Filter notes based on search query
-  const filteredNotes = notes.filter(note => {
+  const filteredNotes = notes.filter((note: any) => {
     if (!noteSearchQuery.trim()) return true;
     
     const query = noteSearchQuery.toLowerCase();
     const noteTitle = (note.title || 'Untitled').toLowerCase();
-    const notebook = notebooks.find(nb => nb.id === note.notebookId);
+    const notebook = notebooks.find((nb: any) => nb.id === note.notebookId);
     const notebookName = notebook?.name.toLowerCase() || '';
     
     return noteTitle.includes(query) || notebookName.includes(query);
@@ -117,14 +117,14 @@ export function TaskDialog({ open, onOpenChange, task, defaultNoteId }: TaskDial
 
   // Get notebook for a note
   const getNotebookForNote = (noteId: string) => {
-    const note = notes.find(n => n.id === noteId);
+    const note = notes.find((n: any) => n.id === noteId);
     if (!note) return null;
-    return notebooks.find(nb => nb.id === note.notebookId) || null;
+    return notebooks.find((nb: any) => nb.id === note.notebookId) || null;
   };
 
   // Get selected note display value
   const getSelectedNoteDisplay = () => {
-    const selectedNote = notes.find(n => n.id === form.watch('noteId'));
+    const selectedNote = notes.find((n: any) => n.id === form.watch('noteId'));
     if (!selectedNote) return 'Select a note...';
     
     const notebook = getNotebookForNote(selectedNote.id);
@@ -147,7 +147,7 @@ export function TaskDialog({ open, onOpenChange, task, defaultNoteId }: TaskDial
       createTaskAsync(newTaskData)
         .then((createdTask) => {
           // Add task block to the selected note
-          const selectedNote = notes.find(note => note.id === data.noteId);
+          const selectedNote = notes.find((note: any) => note.id === data.noteId);
           if (selectedNote) {
             const taskBlock = {
               id: crypto.randomUUID(),

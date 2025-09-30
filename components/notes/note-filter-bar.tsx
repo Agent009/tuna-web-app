@@ -117,7 +117,10 @@ export function NoteFilterBar({ className }: NoteFilterBarProps) {
   };
 
   const handleCustomDateRange = (range: { from?: Date; to?: Date }) => {
-    if (!range) return;
+    if (!range) {
+      updateFilter('dateRange', { start: null, end: null });
+      return;
+    }
     updateFilter('dateRange', {
       start: range.from || null,
       end: range.to || null
@@ -255,7 +258,7 @@ export function NoteFilterBar({ className }: NoteFilterBarProps) {
             <DropdownMenuContent align="start" className="w-56">
               <DropdownMenuLabel>Filter by Notebooks</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              {notebooks.map((notebook) => (
+              {notebooks.map((notebook: Notebook) => (
                 <DropdownMenuCheckboxItem
                   key={notebook.id}
                   checked={filters.notebooks.includes(notebook.id)}
