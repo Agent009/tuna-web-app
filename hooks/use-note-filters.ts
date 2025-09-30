@@ -88,15 +88,15 @@ export function useNoteFilters() {
 
   // Filter notes based on current filters
   const filteredNotes = useMemo(() => {
-    return notes.filter(note => {
+    return notes.filter((note: Note) => {
       // Search filter
       if (filters.search.trim()) {
         const searchTerm = filters.search.toLowerCase();
         const titleMatch = note.title.toLowerCase().includes(searchTerm);
-        const contentMatch = note.content.some(block => 
+        const contentMatch = note.content.some((block: Block) => 
           block.content.toLowerCase().includes(searchTerm)
         );
-        const tagMatch = note.tags.some(tag => 
+        const tagMatch = note.tags.some((tag: string) => 
           tag.toLowerCase().includes(searchTerm)
         );
         

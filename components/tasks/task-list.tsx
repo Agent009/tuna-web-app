@@ -19,7 +19,7 @@ import { TaskItem } from './task-item';
 import { SortableTaskItem } from './sortable-task-item';
 import { useTasks } from '@/hooks/use-tasks';
 import { useNotes } from '@/hooks/use-notes';
-import { Task, TaskFilters, TaskSortBy } from '@/lib/types';
+import { Task, TaskFilters, TaskSortBy, Note } from '@/lib/types';
 
 interface TaskListProps {
   onCreateTask: () => void;

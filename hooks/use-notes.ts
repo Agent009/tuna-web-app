@@ -33,9 +33,9 @@ export function useNotes() {
       
       // Update note counts for each notebook
       const notesCount = await db.notes.toArray();
-      return notebooks.map(notebook => ({
+      return notebooks.map((notebook: Notebook) => ({
         ...notebook,
-        noteCount: notesCount.filter(note => note.notebookId === notebook.id && !note.isArchived).length
+        noteCount: notesCount.filter((note: Note) => note.notebookId === notebook.id && !note.isArchived).length
       }));
     },
     enabled: isClient

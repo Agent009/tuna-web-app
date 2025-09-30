@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { TaskList } from './task-list';
 import { TaskDialog } from './task-dialog';
-import { Task } from '@/lib/types';
+import { Task, Note } from '@/lib/types';
 import { useNotes } from '@/hooks/use-notes';
 
 export function TaskView() {

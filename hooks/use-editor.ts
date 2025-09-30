@@ -25,7 +25,7 @@ export function useEditor(initialBlocks: Block[] = []) {
   useEffect(() => {
     // Only update if initialBlocks actually changed
     const blocksChanged = JSON.stringify(initialBlocks) !== JSON.stringify(blocks);
-
+    
     if (blocksChanged) {
       const newBlocks = ensureMinimumBlocks(initialBlocks);
       setBlocks(newBlocks);
@@ -44,18 +44,18 @@ export function useEditor(initialBlocks: Block[] = []) {
 
   const addBlock = useCallback((afterBlockId?: string, type: BlockType = 'paragraph') => {
     const newBlock = createBlock(type);
-
+    
     setBlocks(currentBlocks => {
       if (!afterBlockId) {
         return [...currentBlocks, newBlock];
       }
-
+      
       const index = currentBlocks.findIndex(block => block.id === afterBlockId);
       const newBlocks = [...currentBlocks];
       newBlocks.splice(index + 1, 0, newBlock);
       return newBlocks;
     });
-
+    
     setFocusedBlockId(newBlock.id);
     return newBlock.id;
   }, [createBlock]);
@@ -89,15 +89,15 @@ export function useEditor(initialBlocks: Block[] = []) {
     setBlocks(currentBlocks => {
       const draggedIndex = currentBlocks.findIndex(block => block.id === draggedId);
       const targetIndex = currentBlocks.findIndex(block => block.id === targetId);
-
+      
       if (draggedIndex === -1 || targetIndex === -1) return currentBlocks;
-
+      
       const newBlocks = [...currentBlocks];
       const [draggedBlock] = newBlocks.splice(draggedIndex, 1);
-
+      
       const insertIndex = position === 'before' ? targetIndex : targetIndex + 1;
       newBlocks.splice(insertIndex, 0, draggedBlock);
-
+      
       return newBlocks;
     });
   }, []);
@@ -119,7 +119,7 @@ export function useEditor(initialBlocks: Block[] = []) {
     const blockType = commands[command];
     if (blockType) {
       const updates: Partial<Block> = { type: blockType, content: '' };
-
+      
       // If creating a task block, add default properties
       if (blockType === 'task') {
         updates.properties = {
@@ -129,7 +129,7 @@ export function useEditor(initialBlocks: Block[] = []) {
           // taskId will be created when content is added
         };
       }
-
+      
       updateBlock(blockId, updates);
       // Maintain focus on the block after command selection
       setTimeout(() => {

@@ -41,7 +41,7 @@ export class SearchEngine {
   }
 
   private extractHighlights(matches: any[]): string[] {
-    return [...matches]
+    return [...(matches || [])]
       .map(match => match.value)
       .slice(0, 3);
   }

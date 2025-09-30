@@ -80,7 +80,7 @@ export function useRichText({ initialFormatting = {}, onFormatChange }: UseRichT
     // Create a span with the formatting
     const span = document.createElement('span');
     applyStylesToElement(span, newFormatting);
-
+    
     try {
       // Wrap the selected content
       range.surroundContents(span);
@@ -104,7 +104,7 @@ export function useRichText({ initialFormatting = {}, onFormatChange }: UseRichT
     if (formatting.bold) element.style.fontWeight = 'bold';
     if (formatting.italic) element.style.fontStyle = 'italic';
     if (formatting.underline) {
-      element.style.textDecoration = element.style.textDecoration
+      element.style.textDecoration = element.style.textDecoration 
         ? `${element.style.textDecoration} underline`
         : 'underline';
     }
@@ -183,7 +183,7 @@ export function useRichText({ initialFormatting = {}, onFormatChange }: UseRichT
 
     const range = windowSelection.getRangeAt(0);
     let node = range.startContainer;
-
+    
     // If text node, get parent element
     if (node.nodeType === Node.TEXT_NODE) {
       node = node.parentNode!;
@@ -203,7 +203,7 @@ export function useRichText({ initialFormatting = {}, onFormatChange }: UseRichT
       fontFamily: computedStyle.fontFamily,
       align: computedStyle.textAlign as 'left' | 'center' | 'right' | 'justify',
     };
-
+    
     return formatting;
   }, []);
 
